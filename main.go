@@ -17,7 +17,7 @@ func main() {
 	var in string
 	var out string
 	var config string
-	var additionalParameters cli.StringSlice
+	var extraParams cli.StringSlice
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -29,7 +29,7 @@ func main() {
 		cli.StringFlag{
 			Name:        "out",
 			Value:       "",
-			Usage:       "the output file",
+			Usage:       "the output file, stdout if empty",
 			Destination: &out,
 		},
 		cli.StringFlag{
@@ -40,19 +40,23 @@ func main() {
 		},
 		cli.StringSliceFlag{
 			Name:  "set",
-			Usage: "an additional parameters key=value",
-			Value: &additionalParameters,
+			Usage: "an additional parameters in key=value format",
+			Value: &extraParams,
 		},
 	}
 
 	app.Action = func(c *cli.Context) error {
-		log.Printf("Rendering %v into %v", in, out)
+		err := Render(in, out, config, extraParams)
+		if err != nil {
+			log.Fatal("Rendering failed", err)
+			return err
+		}
+
 		return nil
 	}
 
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 }
