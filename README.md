@@ -18,8 +18,8 @@ Simple [go-template](https://golang.org/pkg/text/template/) files render.
 
     GLOBAL OPTIONS:
        --in value      the template file
-       --out value     the output file
+       --out value     the output file, stdout if empty
        --config value  the config file
-       --set value     an additional parameters key=value
+       --set value     an additional parameters in key=value format
        --help, -h      show help
        --version, -v   print the version
