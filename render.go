@@ -53,7 +53,9 @@ func ParseTemplate(input string) *template.Template {
 		log.Fatal("Can't open template file", err)
 	}
 
-	parsed, err := template.New(input).Funcs(sprig.TxtFuncMap()).Parse(string(b))
+	extraFunctions := sprig.TxtFuncMap()
+	extraFunctions["readFile"] = readFile
+	parsed, err := template.New(input).Funcs(extraFunctions).Parse(string(b))
 	if err != nil {
 		log.Fatal("Can't parse template file", err)
 	}
@@ -101,4 +103,13 @@ func NotEmptyAndExists(file string) bool {
 	}
 
 	return true
+}
+
+func readFile(file string) (string, error) {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }
