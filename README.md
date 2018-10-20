@@ -1,6 +1,6 @@
 # render
 
-Simple [go-template](https://golang.org/pkg/text/template/) files render.
+Simple [go-template](https://golang.org/pkg/text/template/) files render with utility [Sprig](http://masterminds.github.io/sprig/) template functions.
 
 ## Usage
 

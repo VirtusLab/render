@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"github.com/ghodss/yaml"
 	"strings"
+	"github.com/Masterminds/sprig"
 )
 
 // TODO improve error handling fatals -> error
@@ -52,7 +53,7 @@ func ParseTemplate(input string) *template.Template {
 		log.Fatal("Can't open template file", err)
 	}
 
-	parsed, err := template.New(input).Parse(string(b))
+	parsed, err := template.New(input).Funcs(sprig.TxtFuncMap()).Parse(string(b))
 	if err != nil {
 		log.Fatal("Can't parse template file", err)
 	}
