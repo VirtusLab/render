@@ -114,7 +114,7 @@ func action(_ *cli.Context) error {
 	r := renderer.New(configuration)
 	err = r.RenderFile(inputPath, outputPath)
 	if err != nil {
-		logrus.Error("Rendering failed", err)
+		logrus.Errorf("Rendering failed: %s", err)
 		return err
 	}
 

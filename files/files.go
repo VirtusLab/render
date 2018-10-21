@@ -15,7 +15,7 @@ func ReadInput(inputPath string) ([]byte, error) {
 	if inputPath == "" {
 		stdinFileInfo, _ := os.Stdin.Stat()
 		if (stdinFileInfo.Mode() & os.ModeNamedPipe) != 0 {
-			logrus.Debug("no input path, using piped stdin")
+			logrus.Debug("No input path, using piped stdin")
 			inputFile = os.Stdin
 		} else {
 			return nil, errors.New("expected a pipe stdin")
@@ -41,10 +41,10 @@ func ReadInput(inputPath string) ([]byte, error) {
 // WriteOutput writes given bytes into outputPath (if not empty) or stdout
 func WriteOutput(outputPath string, outputContent []byte, perm os.FileMode) error {
 	if outputPath == "" {
-		logrus.Debug("no output path, writing to stdout")
+		logrus.Debug("No output path, writing to stdout")
 		count, err := os.Stdout.Write(outputContent)
 		if err == nil && count < len(outputContent) {
-			logrus.Warnf("wrote only %v/%v bytes", count, len(outputContent))
+			logrus.Warnf("Wrote only %v/%v bytes", count, len(outputContent))
 			return io.ErrShortWrite
 		}
 		if err != nil {
@@ -52,7 +52,7 @@ func WriteOutput(outputPath string, outputContent []byte, perm os.FileMode) erro
 			return err
 		}
 	} else {
-		logrus.Debugf("writing to file: %v", outputPath)
+		logrus.Debugf("Writing to file: %v", outputPath)
 		err := ioutil.WriteFile(outputPath, outputContent, perm)
 		if err != nil {
 			logrus.Error("error writing to file")
@@ -62,22 +62,22 @@ func WriteOutput(outputPath string, outputContent []byte, perm os.FileMode) erro
 	return nil
 }
 
-func IsEmptyOrDoesNotExist(file string) bool {
+func IsNotEmptyAndExists(file string) bool {
 	if len(file) == 0 {
 		logrus.Infof("Configuration file path is empty")
-		return true
+		return false
 	}
 
 	fileInfo, err := os.Stat(file)
 	if err != nil {
 		logrus.Infof("Configuration file path does not exist")
-		return true
+		return false
 	}
 
 	if fileInfo.Size() == 0 {
 		logrus.Infof("Configuration file is empty")
-		return true
+		return false
 	}
 
-	return false
+	return true
 }

@@ -51,28 +51,33 @@ func (r *Renderer) RenderFile(inputPath, outputPath string) error {
 }
 
 func NewConfiguration(configPath string, extraParams []string) (Configuration, error) {
-	var configMap map[string]interface{}
-	if files.IsEmptyOrDoesNotExist(configPath) {
-		return configMap, nil // return empty config
+	var configMap = make(map[string]interface{})
+	if files.IsNotEmptyAndExists(configPath) {
+		b, err := ioutil.ReadFile(configPath)
+		if err != nil {
+			logrus.Errorf("Can't open the configuration file: %v", err)
+			return nil, err
+		}
+		err = yaml.Unmarshal(b, &configMap)
+		if err != nil {
+			logrus.Errorf("Can't parse the configuration file: %v", err)
+			return nil, err
+		}
 	}
-
-	b, err := ioutil.ReadFile(configPath)
-	if err != nil {
-		logrus.Errorf("Can't open the configuration file: %v", err)
-		return nil, err
-	}
-	err = yaml.Unmarshal(b, &configMap)
-	if err != nil {
-		logrus.Errorf("Can't parse the configuration file: %v", err)
-		return nil, err
-	}
+	logrus.Debugf("Configuration from files: %v", configMap)
 
 	for _, v := range extraParams {
 		if varArgRegexp.Match(v) {
 			groups := varArgRegexp.MatchGroups(v)
-			configMap[groups["name"]] = groups["value"]
+			name := groups["name"]
+			value := groups["value"]
+			logrus.Debugf("Extra var: %s=%s", name, value)
+			configMap[name] = value
+		} else {
+			logrus.Error("Expected a valid extra parameter: '%s'", v)
 		}
 	}
+	logrus.Debugf("Configuration from files and vars: %v", configMap)
 
 	return configMap, nil
 }
