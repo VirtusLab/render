@@ -6,7 +6,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/VirtusLab/render/constants"
-	"github.com/VirtusLab/render/render"
+	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/version"
 	"github.com/urfave/cli"
 )
@@ -96,7 +96,7 @@ func preload(c *cli.Context) error {
 }
 
 func action(_ *cli.Context) error {
-	err := render.Render(in, out, config, vars)
+	err := renderer.Render(in, out, config, vars)
 	if err != nil {
 		logrus.Fatal("Rendering failed", err)
 		return err
