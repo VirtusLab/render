@@ -6,24 +6,28 @@ and [Sprig](http://masterminds.github.io/sprig/) functions.
 ## Usage
 
     NAME:
-       render - Simple go-template files render
-
+       render - Universal file renderer
+    
     USAGE:
-       render [global options] command [command options] [arguments...]
-
+       main [global options] command [command options] [arguments...]
+    
     VERSION:
-       0.0.1
-
+       v0.0.2-e932f66
+    
+    AUTHOR:
+       VirtusLab
+    
     COMMANDS:
          help, h  Shows a list of commands or help for one command
-
+    
     GLOBAL OPTIONS:
-       --in value      the template file
-       --out value     the output file, stdout if empty
-       --config value  the config file
-       --set value     an additional parameters in key=value format
-       --help, -h      show help
-       --version, -v   print the version
+       --debug, -d               run in debug mode
+       --in value                the template file
+       --out value               the output file, stdout if empty
+       --config value            the config file
+       --set value, --var value  additional parameters in key=value format, can be used multiple times
+       --help, -h                show help
+       --version, -v             print the version
 
 ## Development
 
