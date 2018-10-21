@@ -8,18 +8,19 @@ import (
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/version"
-	"github.com/urfave/cli"
+	"gopkg.in/urfave/cli.v1"
 )
 
 var (
-	in     string
-	out    string
-	config string
-	vars   cli.StringSlice
+	app        *cli.App
+	inputPath  string
+	outputPath string
+	configPath string
+	vars       cli.StringSlice
 )
 
 func main() {
-	app := cli.NewApp()
+	app = cli.NewApp()
 	app.Name = constants.Name
 	app.Usage = constants.Description
 	app.Author = constants.Author
@@ -35,20 +36,20 @@ func main() {
 		cli.StringFlag{
 			Name:        "in",
 			Value:       "",
-			Usage:       "the template file",
-			Destination: &in,
+			Usage:       "the input template file, stdin if empty",
+			Destination: &inputPath,
 		},
 		cli.StringFlag{
 			Name:        "out",
 			Value:       "",
 			Usage:       "the output file, stdout if empty",
-			Destination: &out,
+			Destination: &outputPath,
 		},
 		cli.StringFlag{
 			Name:        "config",
 			Value:       "",
-			Usage:       "the config file",
-			Destination: &config,
+			Usage:       "optional configuration YAML file",
+			Destination: &configPath,
 		},
 		cli.StringSliceFlag{
 			Name:  "set, var",
@@ -92,13 +93,28 @@ func preload(c *cli.Context) error {
 		logrus.Debug("Debug logging enabled")
 	}
 
+	if len(c.Args()) == 0 {
+		return nil
+	}
+
+	if c.Args()[0] == "help" {
+		return nil
+	}
+
 	return nil
 }
 
 func action(_ *cli.Context) error {
-	err := renderer.Render(in, out, config, vars)
+	configuration, err := renderer.NewConfiguration(configPath, vars)
 	if err != nil {
-		logrus.Fatal("Rendering failed", err)
+		logrus.Error("Unable to create a new configuration")
+		return err
+	}
+
+	r := renderer.New(configuration)
+	err = r.RenderFile(inputPath, outputPath)
+	if err != nil {
+		logrus.Error("Rendering failed", err)
 		return err
 	}
 

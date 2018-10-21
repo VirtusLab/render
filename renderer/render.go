@@ -3,114 +3,99 @@ package renderer
 import (
 	"bytes"
 	"io/ioutil"
-	"log"
-	"os"
-	"strings"
 	"text/template"
 
 	"github.com/Masterminds/sprig"
+	"github.com/Sirupsen/logrus"
+	"github.com/VirtusLab/render/files"
+	"github.com/VirtusLab/render/matcher"
 	"github.com/ghodss/yaml"
 )
 
-// TODO improve error handling fatals -> error
+var (
+	varArgRegexp = matcher.NewMust(`^(?P<name>\S+)=(?P<value>\S*)$`)
+)
 
-func Render(input, output, config string, extraParams []string) error {
-	configuration := ParseConfiguration(config, extraParams)
-	parsedTemplate := ParseTemplate(input)
-	render(parsedTemplate, configuration, output)
+type Configuration map[string]interface{}
+
+type Renderer struct {
+	configuration Configuration
+}
+
+func New(configuration Configuration) *Renderer {
+	return &Renderer{
+		configuration: configuration,
+	}
+}
+
+func (r *Renderer) RenderFile(inputPath, outputPath string) error {
+	input, err := files.ReadInput(inputPath)
+	if err != nil {
+		logrus.Errorf("Can't open the template file: %v", err)
+		return err
+	}
+
+	result, err := r.Render(outputPath, string(input))
+	if err != nil {
+		logrus.Errorf("Can't render the template: %v", err)
+		return err
+	}
+
+	err = files.WriteOutput(outputPath, []byte(result), 0644)
+	if err != nil {
+		logrus.Errorf("Can't save the rendered file: %v", err)
+		return err
+	}
 
 	return nil
 }
 
-func render(tmpl *template.Template, configuration map[string]interface{}, output string) {
-	stdout := false
-	if len(output) == 0 {
-		stdout = true
-	}
-
-	var buffer bytes.Buffer
-	err := tmpl.Execute(&buffer, configuration)
-	if err != nil {
-		log.Fatal("Can't render template file", err)
-	}
-
-	if stdout {
-		log.Print(buffer.String())
-	} else {
-		err := ioutil.WriteFile(output, buffer.Bytes(), 0644)
-		if err != nil {
-			log.Fatal("Can't save rendered file", err)
-		}
-	}
-}
-
-func ParseTemplate(input string) *template.Template {
-	if !NotEmptyAndExists(input) {
-		log.Fatalf("Template file %v is empty or does not exist", input)
-	}
-
-	b, err := ioutil.ReadFile(input)
-	if err != nil {
-		log.Fatal("Can't open template file", err)
-	}
-
-	extraFunctions := sprig.TxtFuncMap()
-	extraFunctions["readFile"] = readFile
-	parsed, err := template.New(input).Funcs(extraFunctions).Parse(string(b))
-	if err != nil {
-		log.Fatal("Can't parse template file", err)
-	}
-
-	return parsed
-}
-
-func ParseConfiguration(config string, extraParams []string) map[string]interface{} {
-	if !NotEmptyAndExists(config) {
-		log.Fatalf("Config file %v is empty or does not exist", config)
-	}
-
+func NewConfiguration(configPath string, extraParams []string) (Configuration, error) {
 	var configMap map[string]interface{}
-	b, err := ioutil.ReadFile(config)
+	if files.IsEmptyOrDoesNotExist(configPath) {
+		return configMap, nil // return empty config
+	}
+
+	b, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		log.Fatal("Can't open config file", err)
+		logrus.Errorf("Can't open the configuration file: %v", err)
+		return nil, err
 	}
 	err = yaml.Unmarshal(b, &configMap)
 	if err != nil {
-		log.Fatal("Can't parse config file", err)
+		logrus.Errorf("Can't parse the configuration file: %v", err)
+		return nil, err
 	}
 
-	for _, v:= range extraParams {
-		if strings.Contains(v, "=") {
-			pair := strings.Split(v, "=")
-			configMap[pair[0]] = pair[1]
+	for _, v := range extraParams {
+		if varArgRegexp.Match(v) {
+			groups := varArgRegexp.MatchGroups(v)
+			configMap[groups["name"]] = groups["value"]
 		}
 	}
 
-	return configMap
+	return configMap, nil
 }
 
-func NotEmptyAndExists(file string) bool {
-	if len(file) == 0 {
-		return false
-	}
-
-	fileInfo, err := os.Stat(file)
+func (r *Renderer) Render(templateName, rawTemplate string) (string, error) {
+	extraFunctions := sprig.TxtFuncMap()
+	extraFunctions["render"] = r.render
+	extraFunctions["readFile"] = ReadFile
+	tmpl, err := template.New(templateName).Funcs(extraFunctions).Parse(rawTemplate)
 	if err != nil {
-		return false
-	}
-
-	if fileInfo.Size() == 0 {
-		return false
-	}
-
-	return true
-}
-
-func readFile(file string) (string, error) {
-	b, err := ioutil.ReadFile(file)
-	if err != nil {
+		logrus.Errorf("Can't parse the template file: %v", err)
 		return "", err
 	}
 
-	return string(b), nil
+	var buffer bytes.Buffer
+	err = tmpl.Execute(&buffer, r.configuration)
+	if err != nil {
+		logrus.Errorf("Can't render the template file: %v", err)
+		return "", err
+	}
+	return buffer.String(), nil
+}
+
+func (r *Renderer) render(rawTemplate string) (string, error) {
+	return r.Render("inner", rawTemplate)
 }
