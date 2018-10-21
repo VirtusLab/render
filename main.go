@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	app        *cli.App
-	inputPath  string
-	outputPath string
-	configPath string
-	vars       cli.StringSlice
+	app         *cli.App
+	inputPath   string
+	outputPath  string
+	configPaths cli.StringSlice
+	vars        cli.StringSlice
 )
 
 func main() {
@@ -45,11 +45,10 @@ func main() {
 			Usage:       "the output file, stdout if empty",
 			Destination: &outputPath,
 		},
-		cli.StringFlag{
-			Name:        "config",
-			Value:       "",
-			Usage:       "optional configuration YAML file",
-			Destination: &configPath,
+		cli.StringSliceFlag{
+			Name:  "config",
+			Usage: "optional configuration YAML file, can be used multiple times",
+			Value: &configPaths,
 		},
 		cli.StringSliceFlag{
 			Name:  "set, var",
@@ -105,7 +104,7 @@ func preload(c *cli.Context) error {
 }
 
 func action(_ *cli.Context) error {
-	configuration, err := renderer.NewConfiguration(configPath, vars)
+	configuration, err := renderer.NewConfiguration(configPaths, vars)
 	if err != nil {
 		logrus.Error("Unable to create a new configuration")
 		return err
