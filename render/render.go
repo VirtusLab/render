@@ -1,14 +1,15 @@
-package main
+package render
 
 import (
-	"os"
-	"log"
-	"text/template"
-	"io/ioutil"
 	"bytes"
-	"github.com/ghodss/yaml"
+	"io/ioutil"
+	"log"
+	"os"
 	"strings"
+	"text/template"
+
 	"github.com/Masterminds/sprig"
+	"github.com/ghodss/yaml"
 )
 
 // TODO improve error handling fatals -> error

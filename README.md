@@ -1,6 +1,7 @@
 # render
 
-Simple [go-template](https://golang.org/pkg/text/template/) files render with utility [Sprig](http://masterminds.github.io/sprig/) template functions.
+Universal file renderer based on [go-template](https://golang.org/pkg/text/template/) 
+and [Sprig](http://masterminds.github.io/sprig/) functions.
 
 ## Usage
 
@@ -23,3 +24,18 @@ Simple [go-template](https://golang.org/pkg/text/template/) files render with ut
        --set value     an additional parameters in key=value format
        --help, -h      show help
        --version, -v   print the version
+
+## Development
+
+    mkdir $GOPATH/src/github.com/VirtusLab/
+    git clone 
+    
+    go get -u github.com/golang/dep/cmd/dep
+    
+    export PATH=$PATH:$GOPATH/bin
+    cd $GOPATH/src/github.com/VirtusLab/render
+    make all
+
+## The name
+
+We believe in obvious names.
