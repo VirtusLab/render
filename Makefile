@@ -149,11 +149,23 @@ release: *.go VERSION.txt ## Builds the cross-compiled binaries, naming them in 
 .PHONY: verify
 verify: fmt lint vet staticcheck test ## Runs a fmt, lint, test and vet
 
+.PHONY: cover
+cover: ## Runs go test with coverage
+	@echo "" > coverage.txt
+	@for d in $(shell go list ./... | grep -v vendor); do \
+		go test -race -coverprofile=profile.out -covermode=atomic "$$d"; \
+		if [ -f profile.out ]; then \
+			cat profile.out >> coverage.txt; \
+			rm profile.out; \
+		fi; \
+	done;
+
 .PHONY: clean
 clean: ## Cleanup any build binaries or packages
 	@echo "+ $@"
 	go clean
 	$(RM) $(NAME)
+	$(RM) test$(NAME)
 	$(RM) -r $(BUILDDIR)
 
 .PHONY: bump-version

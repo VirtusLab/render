@@ -1,1 +1,7 @@
-AppName: render
+app_name: render
+
+nested:
+  things:
+  - one
+  - two
+  - three

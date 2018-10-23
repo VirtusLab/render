@@ -1,1 +1,7 @@
-{{ .AppName }} - simple go-template files render
+name: {{ .app_name }}
+
+nested:
+  things:
+{{- range $i, $value := .nested.things}}
+  - {{ $value }}: {{ add 1 $i }}
+{{- end }}
