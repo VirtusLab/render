@@ -32,19 +32,19 @@ func New(configuration Configuration) *Renderer {
 func (r *Renderer) RenderFile(inputPath, outputPath string) error {
 	input, err := files.ReadInput(inputPath)
 	if err != nil {
-		logrus.Errorf("Can't open the template file: %v", err)
+		logrus.Debugf("Can't open the template file: %v", err)
 		return err
 	}
 
 	result, err := r.Render(outputPath, string(input))
 	if err != nil {
-		logrus.Errorf("Can't render the template: %v", err)
+		logrus.Debugf("Can't render the template: %v", err)
 		return err
 	}
 
 	err = files.WriteOutput(outputPath, []byte(result), 0644)
 	if err != nil {
-		logrus.Errorf("Can't save the rendered file: %v", err)
+		logrus.Debugf("Can't save the rendered file: %v", err)
 		return err
 	}
 

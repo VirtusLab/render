@@ -9,6 +9,10 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
+var (
+	ErrExpectedStdin = errors.New("expected a pipe stdin")
+)
+
 // ReadInput reads bytes from inputPath (if not empty) or stdin
 func ReadInput(inputPath string) ([]byte, error) {
 	var inputFile *os.File
@@ -18,13 +22,13 @@ func ReadInput(inputPath string) ([]byte, error) {
 			logrus.Debug("No input path, using piped stdin")
 			inputFile = os.Stdin
 		} else {
-			return nil, errors.New("expected a pipe stdin")
+			return nil, ErrExpectedStdin
 		}
 	} else {
 		logrus.Debugf("input path: %v", inputPath)
 		f, err := os.Open(inputPath)
 		if err != nil {
-			logrus.Error("cannot open file")
+			logrus.Debugf("Cannot open file: '%s'; %v", inputPath, err)
 			return nil, err
 		}
 		defer f.Close()
@@ -32,7 +36,7 @@ func ReadInput(inputPath string) ([]byte, error) {
 	}
 	fileContent, err := ioutil.ReadAll(inputFile)
 	if err != nil {
-		logrus.Error("cannot read file")
+		logrus.Debugf("Cannot read file: '%s'; %v", inputPath, err)
 		return nil, err
 	}
 	return fileContent, nil
@@ -48,14 +52,14 @@ func WriteOutput(outputPath string, outputContent []byte, perm os.FileMode) erro
 			return io.ErrShortWrite
 		}
 		if err != nil {
-			logrus.Error("error writing to stdout")
+			logrus.Debugf("Error writing to stdout; %v", err)
 			return err
 		}
 	} else {
 		logrus.Debugf("Writing to file: %v", outputPath)
 		err := ioutil.WriteFile(outputPath, outputContent, perm)
 		if err != nil {
-			logrus.Error("error writing to file")
+			logrus.Debugf("Error writing to file: '%s'; %v", outputPath, err)
 			return err
 		}
 	}

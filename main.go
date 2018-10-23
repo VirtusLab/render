@@ -6,6 +6,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/VirtusLab/render/constants"
+	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/version"
 	"gopkg.in/urfave/cli.v1"
@@ -113,7 +114,10 @@ func action(_ *cli.Context) error {
 	r := renderer.New(configuration)
 	err = r.RenderFile(inputPath, outputPath)
 	if err != nil {
-		logrus.Errorf("Rendering failed: %s", err)
+		if err == files.ErrExpectedStdin {
+			return fmt.Errorf("expected either stdin or --in parameter, for usage use --help")
+		}
+		logrus.Debugf("Rendering failed: %s", err)
 		return err
 	}
 
