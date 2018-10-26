@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
-  name = "github.com/BurntSushi/toml"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
-  version = "v0.3.1"
-
-[[projects]]
   digest = "1:55388fd080150b9a072912f97b1f5891eb0b50df43401f8b75fb4273d3fec9fc"
   name = "github.com/Masterminds/semver"
   packages = ["."]
@@ -26,12 +18,15 @@
   version = "v2.16.0"
 
 [[projects]]
-  digest = "1:3f53e9e4dfbb664cd62940c9c4b65a2171c66acd0b7621a1a6b8e78513525a52"
+  digest = "1:ba912523e603bc6ae1004d168a2e72166302ed8874386aec695513ceea5d8846"
   name = "github.com/Sirupsen/logrus"
-  packages = ["."]
+  packages = [
+    ".",
+    "hooks/test",
+  ]
   pruneopts = "UT"
-  revision = "ad15b42461921f1fb3529b058c6786c6a45d5162"
-  version = "v1.1.1"
+  revision = "ba1b36c82c5e05c4f912a88eab0dcd91a171688f"
+  version = "v0.11.5"
 
 [[projects]]
   digest = "1:8f5416c7f59da8600725ae1ff00a99af1da8b04c211ae6f3c8f8bcab0164f650"
@@ -40,6 +35,14 @@
   pruneopts = "UT"
   revision = "3391d3790d23d03408670993e957e8f408993c34"
   version = "v1.0.1"
+
+[[projects]]
+  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = "UT"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
 
 [[projects]]
   digest = "1:2cd7915ab26ede7d95b8749e6b1f933f1c6d5398030684e6505940a10f31cfda"
@@ -74,43 +77,52 @@
   version = "v0.3.6"
 
 [[projects]]
-  digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
-  name = "github.com/konsorten/go-windows-terminal-sequences"
+  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
+  name = "github.com/pkg/errors"
   packages = ["."]
   pruneopts = "UT"
-  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
-  version = "v1.0.1"
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
+  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  pruneopts = "UT"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:18752d0b95816a1b777505a97f71c7467a8445b8ffb55631a7bf779f6ba4fa83"
+  name = "github.com/stretchr/testify"
+  packages = ["assert"]
+  pruneopts = "UT"
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
 
 [[projects]]
   branch = "master"
-  digest = "1:69b3fcb7a41b18436a85471cbdcfc70ad10ba3206f8c87563e1c773610e1bcad"
+  digest = "1:29672ea8ec3ef342d345f668d47666e45366b7691080ee4c07bf4851f4fa8864"
   name = "golang.org/x/crypto"
   packages = [
     "pbkdf2",
     "scrypt",
-    "ssh/terminal",
   ]
   pruneopts = "UT"
   revision = "0c41d7ab0a0ee717d4590a44bcb987dfd9e183eb"
 
 [[projects]]
   branch = "master"
-  digest = "1:db09bef7e2c1a744c896d1f812eb7f08c1b13828edff7d7b6dd8a7f2e504e87f"
+  digest = "1:d99359caa06128f971c1b1373e8c6c4221ed74f07840e66d660006f0c2df0ed6"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows",
-  ]
+  packages = ["unix"]
   pruneopts = "UT"
   revision = "8b8824e799c8fc8e6d900615cc6c761ce6c26c67"
 
 [[projects]]
-  digest = "1:5f1425074efce8ad776450fda6bdd11e816c825771ba56654493d5fdeac27322"
+  digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
   name = "gopkg.in/urfave/cli.v1"
-  packages = [
-    ".",
-    "altsrc",
-  ]
+  packages = ["."]
   pruneopts = "UT"
   revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
   version = "v1.20.0"
@@ -129,9 +141,12 @@
   input-imports = [
     "github.com/Masterminds/sprig",
     "github.com/Sirupsen/logrus",
+    "github.com/Sirupsen/logrus/hooks/test",
     "github.com/ghodss/yaml",
+    "github.com/imdario/mergo",
+    "github.com/pkg/errors",
+    "github.com/stretchr/testify/assert",
     "gopkg.in/urfave/cli.v1",
-    "gopkg.in/urfave/cli.v1/altsrc",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

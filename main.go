@@ -8,6 +8,7 @@ import (
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer"
+	"github.com/VirtusLab/render/renderer/configuration"
 	"github.com/VirtusLab/render/version"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -105,13 +106,12 @@ func preload(c *cli.Context) error {
 }
 
 func action(_ *cli.Context) error {
-	configuration, err := renderer.NewConfiguration(configPaths, vars)
+	config, err := configuration.All(configPaths, vars)
 	if err != nil {
-		logrus.Error("Unable to create a new configuration")
 		return err
 	}
 
-	r := renderer.New(configuration)
+	r := renderer.New(config)
 	err = r.RenderFile(inputPath, outputPath)
 	if err != nil {
 		if err == files.ErrExpectedStdin {

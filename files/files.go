@@ -1,12 +1,13 @@
 package files
 
 import (
-	"errors"
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -84,4 +85,19 @@ func IsNotEmptyAndExists(file string) bool {
 	}
 
 	return true
+}
+
+func ToAbsPath(path, root string) (string, error) {
+	if filepath.IsAbs(path) {
+		return path, nil
+	}
+	return filepath.Join(root, path), nil
+}
+
+func Pwd() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	return dir, nil
 }

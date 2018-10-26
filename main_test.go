@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/VirtusLab/render/files"
 
 	"github.com/VirtusLab/render/constants"
@@ -60,7 +62,8 @@ func run(args ...string) (stdout, stderr string, err error) {
 	prog := "./" + testBinaryName + exeSuffix
 	// always add debug flag
 	newargs := append([]string{"-d"}, args...)
-	ctx, _ := context.WithTimeout(context.TODO(), killIn)
+	ctx, cancel := context.WithTimeout(context.TODO(), killIn)
+	defer cancel()
 
 	fmt.Printf("$ %s %s\n\n", prog, strings.Join(newargs, " "))
 	stdout, stderr, err = sh(ctx, prog, newargs...)
@@ -105,29 +108,17 @@ func TestRender(t *testing.T) {
 
 	expectedPath := "examples/example.yaml.expected"
 	expected, err := files.ReadInput(expectedPath)
-	if err != nil {
-		t.Fatalf("cannot read test file: '%s'", expectedPath)
-	}
 
-	if stdout != string(expected) {
-		t.Fatalf("expected:\n%s\ngot:\n%s", expected, stdout)
-	}
+	assert.NoErrorf(t, err, "cannot read test file: '%s'", expectedPath)
+	assert.Equal(t, string(expected), stdout)
 }
 
 func TestNoArgs(t *testing.T) {
 	stdout, stderr, err := run()
-	if ee, ok := err.(*exec.ExitError); ok {
-		if ee.String() != "exit status 1" {
-			t.Fatal("expected exit status 1")
-		}
-	} else if err != nil {
-		t.Fatalf("output: '%s', error: %v", string(stdout), err)
-	}
+	assert.EqualError(t, err, "exit status 1")
 
 	expectedStdout := ``
-	if stdout != expectedStdout {
-		t.Fatalf("expected:\n%s\ngot:\n%s", expectedStdout, stdout)
-	}
+	assert.Equal(t, expectedStdout, stdout)
 
 	expectedStderr := `expected either stdin or --in parameter, for usage use --help`
 	if !strings.Contains(stderr, expectedStderr) {

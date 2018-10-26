@@ -5,3 +5,6 @@ nested:
   - one
   - two
   - three
+
+inner:
+  path: examples/inner.yaml.tmpl

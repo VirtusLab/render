@@ -5,3 +5,6 @@ nested:
 {{- range $i, $value := .nested.things}}
   - {{ $value }}: {{ add 1 $i }}
 {{- end }}
+
+from_file:
+  {{ readFile .inner.path | render }}
