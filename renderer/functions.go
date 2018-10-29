@@ -5,6 +5,7 @@ import (
 
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer/configuration"
+	"github.com/ghodss/yaml"
 	"github.com/pkg/errors"
 )
 
@@ -31,6 +32,11 @@ func (r *Renderer) ReadFile(file string) (string, error) {
 	}
 
 	return string(bs), nil
+}
+
+func (r *Renderer) ToYaml(yamlSnippet interface{}) (string, error) {
+	marshaledYaml, err := yaml.Marshal(yamlSnippet)
+	return string(marshaledYaml), err
 }
 
 // TODO: gzip, ungzip, encrypt, decrypt

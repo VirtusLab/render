@@ -46,6 +46,7 @@ func (r *Renderer) Render(templateName, rawTemplate string) (string, error) {
 	extraFunctions := sprig.TxtFuncMap()
 	extraFunctions["render"] = r.render
 	extraFunctions["readFile"] = r.ReadFile
+	extraFunctions["toYaml"] = r.ToYaml
 	tmpl, err := template.New(templateName).Funcs(extraFunctions).Parse(rawTemplate)
 	if err != nil {
 		logrus.Errorf("Can't parse the template file: %v", err)
