@@ -95,7 +95,7 @@ func WithVars(extraParams []string) (Configuration, error) {
 			logrus.Debugf("Extra var: %s=%s", name, value)
 			config[name] = value
 		} else {
-			logrus.Error("Expected a valid extra parameter: '%s'", v)
+			logrus.Errorf("Expected a valid extra parameter: '%s'", v)
 		}
 	}
 
