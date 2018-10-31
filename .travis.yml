@@ -11,7 +11,7 @@ jobs:
     - make dep verify
   - stage: Build Release
     script:
-    - make release
+    - make dep release
     - echo "Deploying to GitHub releases ..."
     deploy:
       provider: releases
