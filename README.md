@@ -18,7 +18,7 @@ Custom functions:
        main [global options] command [command options] [arguments...]
     
     VERSION:
-       v0.0.2-e932f66
+       v0.0.3-e932f66
     
     AUTHOR:
        VirtusLab
