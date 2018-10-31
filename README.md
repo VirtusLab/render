@@ -3,6 +3,12 @@
 Universal file renderer based on [go-template](https://golang.org/pkg/text/template/) 
 and [Sprig](http://masterminds.github.io/sprig/) functions.
 
+Custom functions:
+
+- `render` - invokes the `render` from inside of the template, making the renderer recursive, [see example](examples/example.yaml.tmpl#L10), can be combined with other functions, e.g. `b64dec`, `b64enc`, `readFile`
+- `readFile` - reads a file from a given path, relative paths are translated to abolute paths, based on `root` function
+- `root` - the root path for rendering, used relative to absolute path tranlsation in any file based operations; by default `PWD` is used, can be overriden with a `--config` or `--set`
+
 ## Usage
 
     NAME:
@@ -28,6 +34,23 @@ and [Sprig](http://masterminds.github.io/sprig/) functions.
        --set value, --var value  additional parameters in key=value format, can be used multiple times
        --help, -h                show help
        --version, -v             print the version
+
+## Helm compatibility
+
+As of now, there is a limited Helm 2 Chart compatibility, simple Charts will render just fine.
+
+There is no plan to implement full compatibility with Helm, because of unnecesary complexity that would bring.
+
+## Limitations and future work
+
+Planned new functions:
+
+- `encrypt`, `decrypt` - cloud KMS (AWS, Amazon, Google) based encryption for any data
+- `gzip`, `ungzip` - use `gzip` compression and extraction inside the templates
+
+Planned new features:
+
+- diretories as `--in` and `--out` arguments, currently only files are supported
 
 ## Development
 
