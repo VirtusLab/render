@@ -1,5 +1,4 @@
 language: go
-# Setting sudo access to false will let Travis CI use containers rather than VMs to run the tests
 sudo: false
 go:
 - 1.10.x
@@ -54,6 +53,7 @@ jobs:
       - cross/reg-windows-386.sha256
       skip_cleanup: true
       on:
+      repo: VirtusLab/render
         tags: true
       api_key:
-        secure: KWv6yl51YlqLApkIF2D7axyHJjuORH9eMVkZKJPYFbWDaUsu0roFzb41QuC9tzbZunRg7tDE/BnkNkQLxqVl0hIB6Kmn9y81p9ukmm9GxRehNYJZj3U7+WQTFzTvNr7wRM+Jc3jmWXdm6F84Fg1zobfnbmsr0slzzwApPF/BbNUDvRm9m/FVKj9GbzU6vb5QcqcAKKy03k7iiqn9BxzKKEXw2mtFcJukMD0laGhYyGV0aW8PL2Uamp0FLR6bki2yf8X/WKDQ1wD0+W1zpnkPQ238I1Z8If5BXmT/hO72+Il3TCApqEl6htWubMf7gkVYIGrn5O1xUIjOIdPiTA5vvxRUoXp0EwgZSvVKwFq1PCgA08ada9MFRer4pT+jjNK6wqeQ/BI66UGt4e+t3UgqrWCmzKb/hOnUpdu/9xjq/iAS5xULQ2ZjZh0cC/xoIsfJv0ezmsZUBm2w59ryHwZF68RBXYgHvMkRunoe4Ff3F29L9JMcBd/2qCjzY0Hi3W++oHA4ayqklV4Vd1FXFBSHOrPoXmzPTxE9mPxtGUKXkWEkEakfzI4DtYdVbRdVv4lzcFx1N2VKDnHcU6I0Ou26QovZ3+saObO0WQpAD88avth7lrb7dZVD+dxUaZ4UcVD8O8uYg5KIRoJzpeEA+jZpGVsK4xfxuYIwtyGGb6XH/g8=
+        secure: b2YIS9g7dyGPxzoQF/GIO1Gbq+XT6bQqATUtt91Uz6AoxGTbWaYIv7++4CF2Fg7k/FMrqjVL0u5fkDh3aX8z9jivqBUKFWIswiQCdVi7SAK1HgrhQzhyUxbah5Vb60QQVgyHq/SjtkbrMxG0aDwVSMhXLCurnP5eLjkx6D2uzwS/HHnfQkNm1M2LtLEAISS2TiQ8qIcamahLOWMXtzIAP27AMoIH/uVR2Je++qRBz1kP3vr+c50iEG5AJBP0ngjVk1bAld249DfL2BsExToB3nTPEUVdD1+UqLyr3o7+aghrGafA+OJ615TdwdamnfRVG9uDXOxh/xU5KWkfqaDMnrByhyrK6/adpVCuTgdn/vVU3gutyEjIM9QeRUxvP5hrwBXl+qhed6puEno07f2rfkCcT/O2Ige42g6RQW7FOupFfAj6sUFxH9FyIj1QPsFmvQ7C/nX8u81mVSOErnqPW21a5gMgg7U7C1glms/qUayV7qBlS1WwmQnNARtPDHEaz3y1t0D/ivIjAwb42Azpukjuy1IrGuQLnnnX5OwRkysjjaoyXLXDVP7XT0FeLNU7rhy7PlRIL1giVIbnEOoPGXuQP3L1lsgG6oK6Rj8m67w0e2eaMtwZcnJeztdkGl4QQEIVu/EQEcZfLOriYd3NCB8td+aH5mPSuxa+7otqyGo=
