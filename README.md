@@ -11,29 +11,29 @@ Custom functions:
 
 ## Usage
 
-  NAME:
-     render - Universal file renderer
+    NAME:
+       render - Universal file renderer
 
-  USAGE:
-     render [global options] command [command options] [arguments...]
+    USAGE:
+       render [global options] command [command options] [arguments...]
 
-  VERSION:
-     v0.0.3-9545028
+    VERSION:
+       v0.0.3-9545028
 
-  AUTHOR:
-     VirtusLab
+    AUTHOR:
+       VirtusLab
 
-  COMMANDS:
-       help, h  Shows a list of commands or help for one command
+    COMMANDS:
+         help, h  Shows a list of commands or help for one command
 
-  GLOBAL OPTIONS:
-     --debug, -d               run in debug mode
-     --in value                the input template file, stdin if empty
-     --out value               the output file, stdout if empty
-     --config value            optional configuration YAML file, can be used multiple times
-     --set value, --var value  additional parameters in key=value format, can be used multiple times
-     --help, -h                show help
-     --version, -v             print the version
+    GLOBAL OPTIONS:
+       --debug, -d               run in debug mode
+       --in value                the input template file, stdin if empty
+       --out value               the output file, stdout if empty
+       --config value            optional configuration YAML file, can be used multiple times
+       --set value, --var value  additional parameters in key=value format, can be used multiple times
+       --help, -h                show help
+       --version, -v             print the version
 
 Notes:
 - `--in`, `--out` take only files (not directories) at the moment, `--in` will consume any file as long as it can be parsed
