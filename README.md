@@ -1,5 +1,12 @@
 # render
 
+[![Version](https://img.shields.io/badge/version-v0.0.3-brightgreen.svg)](https://github.com/VirtusLab/render/releases/tag/v0.0.3)
+[![Travis CI](https://img.shields.io/travis/VirtusLab/render.svg?style=for-the-badge)](https://travis-ci.org/VirtusLab/render)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=for-the-badge)](https://godoc.org/github.com/VirtusLab/render)
+[![Github All Releases](https://img.shields.io/github/downloads/VirtusLab/render/total.svg?style=for-the-badge)](https://github.com/VirtusLab/render/releases)
+[![Coverage](https://codecov.io/gh/VirtusLab/render/branch/master/graph/badge.svg "Test Coverage")](https://codecov.io/gh/VirtusLab/render)
+[![Go Report Card](https://goreportcard.com/badge/github.com/VirtusLab/render "Go Report Card")](https://goreportcard.com/report/github.com/VirtusLab/render)
+
 Universal file renderer based on [go-template](https://golang.org/pkg/text/template/) 
 and [Sprig](http://masterminds.github.io/sprig/) functions.
 

@@ -1,0 +1,53 @@
+language: go
+go:
+- 1.10.x
+matrix:
+  fast_finish: true
+before_install:
+- make init
+jobs:
+  include:
+  - script:
+    - make dep verify
+  - stage: Build Release
+    script:
+    - make release
+    - echo "Deploying to GitHub releases ..."
+    deploy:
+      provider: releases
+      file:
+      - cross/reg-darwin-amd64
+      - cross/reg-darwin-amd64.md5
+      - cross/reg-darwin-amd64.sha256
+      - cross/reg-darwin-386
+      - cross/reg-darwin-386.md5
+      - cross/reg-darwin-386.sha256
+      - cross/reg-freebsd-amd64
+      - cross/reg-freebsd-amd64.md5
+      - cross/reg-freebsd-amd64.sha256
+      - cross/reg-freebsd-386
+      - cross/reg-freebsd-386.md5
+      - cross/reg-freebsd-386.sha256
+      - cross/reg-linux-arm
+      - cross/reg-linux-arm.md5
+      - cross/reg-linux-arm.sha256
+      - cross/reg-linux-arm64
+      - cross/reg-linux-arm64.md5
+      - cross/reg-linux-arm64.sha256
+      - cross/reg-linux-amd64
+      - cross/reg-linux-amd64.md5
+      - cross/reg-linux-amd64.sha256
+      - cross/reg-linux-386
+      - cross/reg-linux-386.md5
+      - cross/reg-linux-386.sha256
+      - cross/reg-windows-amd64
+      - cross/reg-windows-amd64.md5
+      - cross/reg-windows-amd64.sha256
+      - cross/reg-windows-386
+      - cross/reg-windows-386.md5
+      - cross/reg-windows-386.sha256
+      skip_cleanup: true
+      on:
+        tags: true
+      api_key:
+        secure: KWv6yl51YlqLApkIF2D7axyHJjuORH9eMVkZKJPYFbWDaUsu0roFzb41QuC9tzbZunRg7tDE/BnkNkQLxqVl0hIB6Kmn9y81p9ukmm9GxRehNYJZj3U7+WQTFzTvNr7wRM+Jc3jmWXdm6F84Fg1zobfnbmsr0slzzwApPF/BbNUDvRm9m/FVKj9GbzU6vb5QcqcAKKy03k7iiqn9BxzKKEXw2mtFcJukMD0laGhYyGV0aW8PL2Uamp0FLR6bki2yf8X/WKDQ1wD0+W1zpnkPQ238I1Z8If5BXmT/hO72+Il3TCApqEl6htWubMf7gkVYIGrn5O1xUIjOIdPiTA5vvxRUoXp0EwgZSvVKwFq1PCgA08ada9MFRer4pT+jjNK6wqeQ/BI66UGt4e+t3UgqrWCmzKb/hOnUpdu/9xjq/iAS5xULQ2ZjZh0cC/xoIsfJv0ezmsZUBm2w59ryHwZF68RBXYgHvMkRunoe4Ff3F29L9JMcBd/2qCjzY0Hi3W++oHA4ayqklV4Vd1FXFBSHOrPoXmzPTxE9mPxtGUKXkWEkEakfzI4DtYdVbRdVv4lzcFx1N2VKDnHcU6I0Ou26QovZ3+saObO0WQpAD88avth7lrb7dZVD+dxUaZ4UcVD8O8uYg5KIRoJzpeEA+jZpGVsK4xfxuYIwtyGGb6XH/g8=

@@ -45,7 +45,7 @@ GO_LDFLAGS=-ldflags "-w $(CTIMEVAR)"
 GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 
 # List the GOOS and GOARCH to build
-GOOSARCHES = darwin/amd64 linux/amd64 windows/amd64
+GOOSARCHES = darwin/amd64 darwin/386 freebsd/amd64 freebsd/386 linux/arm linux/arm64 linux/amd64 linux/386 windows/amd64 windows/386
 
 ARGS ?= $(EXTRA_ARGS)
 

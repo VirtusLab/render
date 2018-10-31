@@ -19,6 +19,7 @@ profile.out
 
 # Temporary Files and Dependencies
 tmp
+cross
 vendor
 
 # IDE
