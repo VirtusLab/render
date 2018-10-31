@@ -1,59 +1,62 @@
 language: go
 sudo: false
+
 go:
 - 1.10.x
 - tip
+
 matrix:
   fast_finish: true
   allow_failures:
   - go: tip
+
 before_install:
 - go get golang.org/x/lint/golint
 - go get honnef.co/go/tools/cmd/staticcheck
-jobs:
-  include:
-  - script:
-    - make verify
-  - stage: Build Release
-    script:
-    - make release
-    - echo "Deploying to GitHub releases ..."
-    deploy:
-      provider: releases
-      file:
-      - cross/render-darwin-amd64
-      - cross/render-darwin-amd64.md5
-      - cross/render-darwin-amd64.sha256
-      - cross/render-darwin-386
-      - cross/render-darwin-386.md5
-      - cross/render-darwin-386.sha256
-      - cross/render-freebsd-amd64
-      - cross/render-freebsd-amd64.md5
-      - cross/render-freebsd-amd64.sha256
-      - cross/render-freebsd-386
-      - cross/render-freebsd-386.md5
-      - cross/render-freebsd-386.sha256
-      - cross/render-linux-arm
-      - cross/render-linux-arm.md5
-      - cross/render-linux-arm.sha256
-      - cross/render-linux-arm64
-      - cross/render-linux-arm64.md5
-      - cross/render-linux-arm64.sha256
-      - cross/render-linux-amd64
-      - cross/render-linux-amd64.md5
-      - cross/render-linux-amd64.sha256
-      - cross/render-linux-386
-      - cross/render-linux-386.md5
-      - cross/render-linux-386.sha256
-      - cross/render-windows-amd64
-      - cross/render-windows-amd64.md5
-      - cross/render-windows-amd64.sha256
-      - cross/render-windows-386
-      - cross/render-windows-386.md5
-      - cross/render-windows-386.sha256
-      skip_cleanup: true
-      on:
-      repo: VirtusLab/render
-        tags: true
-      api_key:
-        secure: b2YIS9g7dyGPxzoQF/GIO1Gbq+XT6bQqATUtt91Uz6AoxGTbWaYIv7++4CF2Fg7k/FMrqjVL0u5fkDh3aX8z9jivqBUKFWIswiQCdVi7SAK1HgrhQzhyUxbah5Vb60QQVgyHq/SjtkbrMxG0aDwVSMhXLCurnP5eLjkx6D2uzwS/HHnfQkNm1M2LtLEAISS2TiQ8qIcamahLOWMXtzIAP27AMoIH/uVR2Je++qRBz1kP3vr+c50iEG5AJBP0ngjVk1bAld249DfL2BsExToB3nTPEUVdD1+UqLyr3o7+aghrGafA+OJ615TdwdamnfRVG9uDXOxh/xU5KWkfqaDMnrByhyrK6/adpVCuTgdn/vVU3gutyEjIM9QeRUxvP5hrwBXl+qhed6puEno07f2rfkCcT/O2Ige42g6RQW7FOupFfAj6sUFxH9FyIj1QPsFmvQ7C/nX8u81mVSOErnqPW21a5gMgg7U7C1glms/qUayV7qBlS1WwmQnNARtPDHEaz3y1t0D/ivIjAwb42Azpukjuy1IrGuQLnnnX5OwRkysjjaoyXLXDVP7XT0FeLNU7rhy7PlRIL1giVIbnEOoPGXuQP3L1lsgG6oK6Rj8m67w0e2eaMtwZcnJeztdkGl4QQEIVu/EQEcZfLOriYd3NCB8td+aH5mPSuxa+7otqyGo=
+
+script:
+- make verify
+
+before_deploy:
+- make release
+- echo "Deploying to GitHub releases ..."
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ZtoUiICdperoWcnXLDYdlMP227imit75NAOXnranUernLtPOBaJ4N5OHIXkS7FXGPb4b3drsEuOGZ/jx+cRYBExxftD54teRPJIzsV1S9MmSP1BnLOfXeTV1ls4ckReDZzTCtIYohbno44S95SN2ds0s75P/Vqha/kLstfQJ+nrZCyzsvVTQRTUoN46eI0D3fA3HJXz+eZ4J+sLFd5JFp6ZrEvHomODbbuW47iG7pa2aOPBCjywlT2kDjJLQxg/5PJgIWwVtE90pBeGIgbI++dyNAXMw35+vtutGmIXTIhkTrKhrvYW/9+gvhZNZ8bLwvZ0hIsfrKherTmOWvsGSjkRp1AyORl7H9TEvQxq0nbb+MObpTS26p8j0NOOjsYHIXSIZV+msXtwAH2MYitTbnuAjBpvi0Ihye5ESZexQu8h+YP6HygdhJcSm6GlDYxw8Qv4Ec3gotYG6p55ZYjvIq4W8fR+cZKn1aTODF49XvEJXztjJw3sVXUeLV9QoitHffPAHnGrmwLPWQprioEOHo5gDvncathCa4G55D7r7hZPlB4n5m4wKb+8trM0AUk7Jxianpyo+tBMnF0Pxw3nOEEFrLeCOpdfAacsyhKUOGyBieqVV7dS+1XEghK1MwIjMwcCn3Ydzb5mi5keSh7u1mBCwplsZzjeJn11xaemxbeU=
+  skip_cleanup: true
+  on:
+    repo: VirtusLab/render
+    tags: true
+  file:
+  - cross/render-darwin-amd64
+  - cross/render-darwin-amd64.md5
+  - cross/render-darwin-amd64.sha256
+  - cross/render-darwin-386
+  - cross/render-darwin-386.md5
+  - cross/render-darwin-386.sha256
+  - cross/render-freebsd-amd64
+  - cross/render-freebsd-amd64.md5
+  - cross/render-freebsd-amd64.sha256
+  - cross/render-freebsd-386
+  - cross/render-freebsd-386.md5
+  - cross/render-freebsd-386.sha256
+  - cross/render-linux-arm
+  - cross/render-linux-arm.md5
+  - cross/render-linux-arm.sha256
+  - cross/render-linux-arm64
+  - cross/render-linux-arm64.md5
+  - cross/render-linux-arm64.sha256
+  - cross/render-linux-amd64
+  - cross/render-linux-amd64.md5
+  - cross/render-linux-amd64.sha256
+  - cross/render-linux-386
+  - cross/render-linux-386.md5
+  - cross/render-linux-386.sha256
+  - cross/render-windows-amd64
+  - cross/render-windows-amd64.md5
+  - cross/render-windows-amd64.sha256
+  - cross/render-windows-386
+  - cross/render-windows-386.md5
+  - cross/render-windows-386.sha256
