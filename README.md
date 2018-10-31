@@ -38,7 +38,8 @@ Custom functions:
 Notes:
 - `--in`, `--out` take only files (not directories) at the moment, `--in` will consume any file as long as it can be parsed
 - `stdin` and `stdout` can be used instead of `--in` and `--out`
-- `--config` accepts any YAML file
+- `--config` accepts any YAML file, can be used multiple times, the values of the configs will be merged
+- `--set`, `--var` are the same (one is used in Helm, the other in Terraform), we provide both for convinience, any values set here **will override** values form configuration files
 
 ## Helm compatibility
 
