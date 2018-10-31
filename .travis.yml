@@ -1,6 +1,6 @@
 language: go
 go:
-- 1.10.x
+- "1.10"
 matrix:
   fast_finish: true
 before_install:
@@ -8,10 +8,10 @@ before_install:
 jobs:
   include:
   - script:
-    - make dep verify
+    - make verify
   - stage: Build Release
     script:
-    - make dep release
+    - make release
     - echo "Deploying to GitHub releases ..."
     deploy:
       provider: releases
