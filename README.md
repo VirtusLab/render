@@ -162,8 +162,6 @@ We provide cross-compiled binaries for most platforms, but is currently used mai
 
 Feel free to file [issues](https://github.com/VirtusLab/render/issues) or [pull requests](https://github.com/VirtusLab/render/pulls).
 
-Please use, `Signed-off-by:` in commits (`git commit --signoff`).
-
 ## Development
 
     mkdir $GOPATH/src/github.com/VirtusLab/
