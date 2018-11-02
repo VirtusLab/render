@@ -6,7 +6,10 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/VirtusLab/render "Go Report Card")](https://goreportcard.com/report/github.com/VirtusLab/render)
 [![GoDoc](https://godoc.org/github.com/VirtusLab/render?status.svg "GoDoc Documentation")](https://godoc.org/github.com/VirtusLab/render/renderer)
 
-Universal data-driven templates rendering for generating textual output. The renderer extends 
+Universal data-driven templates for generating textual output. Can be used as a single static binary (no dependencies)
+or as a golang library.
+
+The renderer extends 
 [go-template](https://golang.org/pkg/text/template/) and [Sprig](http://masterminds.github.io/sprig/) functions. 
 
 If you are interested in one of the use cases, take a look at this [blog post](https://medium.com/virtuslab/helm-alternative-d6568aa9d40b) 
@@ -29,6 +32,8 @@ about Kubernetes resources rendering. Also see [Helm compatibility](README.md#he
 #### Binaries
 
 For binaries please visit the [Releases Page](https://github.com/VirtusLab/render/releases).
+
+The binaries are statically compiled and does not require any dependencies. 
 
 #### Via Go
 
@@ -107,7 +112,9 @@ func CustomRender(template string) (string, error) {
 }
 ```
 
-See also `RenderWith` function that takes a custom functions map.
+See also [`RenderWith`](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.RenderWith) function that takes a custom functions map.
+
+Also see [tests](https://github.com/VirtusLab/render/blob/master/renderer/render_test.go) for more usage examples.
 
 #### Notable standard and sprig functions
 
@@ -123,10 +130,12 @@ All syntax and functions:
 
 #### Custom functions
 
-- `render` - calls the `render` from inside of the template, making the renderer recursive, [see example](examples/example.yaml.tmpl#L10), can be combined with other functions, e.g. `b64dec`, `b64enc`, `readFile`
-- `readFile` - reads a file from a given path, relative paths are translated to absolute paths, based on `root` function
-- `root` - the root path for rendering, used relative to absolute path translation in any file based operations; by default `PWD` is used, can be overridden with a `--config` or `--set`
+- `render` - calls the `render` from inside of the template, making the renderer recursive, [see example](examples/example.yaml.tmpl#L10)
+- `readFile` - reads a file from a path, relative paths are translated to absolute paths, based on `root` function
+- `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
 - `toYaml` - provides a configuration data structure fragment as a YAML format
+
+See also a more [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).
 
 #### Helm compatibility
 
@@ -136,14 +145,24 @@ There is no plan to implement full compatibility with Helm, because of unnecessa
 
 ## Limitations and future work
 
-Planned new functions:
+#### Planned new functions
 
 - `encrypt`, `decrypt` - cloud KMS (AWS, Amazon, Google) based encryption for any data
 - `gzip`, `ungzip` - use `gzip` compression and extraction inside the templates
 
-Planned new features:
+#### Planned new features
 
 - directories as `--in` and `--out` arguments, currently only files are supported
+
+#### Operating system support
+
+We provide cross-compiled binaries for most platforms, but is currently used mainly with `linux/amd64`.
+
+## Contribution
+
+Feel free to file [issues](https://github.com/VirtusLab/render/issues) or [pull requests](https://github.com/VirtusLab/render/pulls).
+
+Please use, `Signed-off-by:` in commits (`git commit --signoff`).
 
 ## Development
 
