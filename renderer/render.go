@@ -92,6 +92,8 @@ it adds sprig functions and custom functions:
   - root - the root path for rendering, used relative to absolute path translation
           in any file based operations
   - toYaml - provides a configuration data structure fragment as a YAML format
+  - gzip - use gzip compression inside the templates, for best results use with b64enc
+  - ungzip - use gzip extraction inside the templates, for best results use with b64dec
 
 */
 func (r *Renderer) ExtraFunctions() template.FuncMap {

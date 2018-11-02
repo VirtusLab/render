@@ -130,12 +130,14 @@ All syntax and functions:
 
 #### Custom functions
 
-- `render` - calls the `render` from inside of the template, making the renderer recursive, [see example](examples/example.yaml.tmpl#L10)
+- `render` - calls the `render` from inside of the template, making the renderer recursive
 - `readFile` - reads a file from a path, relative paths are translated to absolute paths, based on `root` function
 - `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
 - `toYaml` - provides a configuration data structure fragment as a YAML format
+- `gzip`, `ungzip` - use `gzip` compression and extraction inside the templates, for best results use with `b64enc` and `b64dec`
 
-See also a more [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).
+See also [example](examples/example.yaml.tmpl) template 
+and a more [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).
 
 #### Helm compatibility
 
@@ -148,7 +150,6 @@ There is no plan to implement full compatibility with Helm, because of unnecessa
 #### Planned new functions
 
 - `encrypt`, `decrypt` - cloud KMS (AWS, Amazon, Google) based encryption for any data
-- `gzip`, `ungzip` - use `gzip` compression and extraction inside the templates
 
 #### Planned new features
 
