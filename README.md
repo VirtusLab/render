@@ -96,7 +96,7 @@ Also see a [more advanced tempalte](examples/example.yaml.tmpl) example.
 package example
 
 import (
-	"github.com/VirtusLab/render/renderer"
+    "github.com/VirtusLab/render/renderer"
     "github.com/VirtusLab/render/renderer/configuration"
 )
 
