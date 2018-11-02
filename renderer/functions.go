@@ -6,17 +6,16 @@ import (
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer/configuration"
 	"github.com/ghodss/yaml"
-	"github.com/pkg/errors"
 )
 
 func (r *Renderer) root() (string, error) {
 	if value, ok := r.configuration[configuration.RootKey].(string); ok {
 		return value, nil
 	}
-	return "", errors.Errorf("can't get '%s' as a string key from the configuration", configuration.RootKey)
+	return files.Pwd()
 }
 
-// ReadFile provides a custom template function for in-template file opening
+// ReadFile is a template function that allows for an in-template file opening
 func (r *Renderer) ReadFile(file string) (string, error) {
 	root, err := r.root()
 	if err != nil {
@@ -34,8 +33,9 @@ func (r *Renderer) ReadFile(file string) (string, error) {
 	return string(bs), nil
 }
 
-func (r *Renderer) ToYaml(yamlSnippet interface{}) (string, error) {
-	marshaledYaml, err := yaml.Marshal(yamlSnippet)
+// ToYaml is a template function, it turns a marshallable structure into a YAML fragment
+func (r *Renderer) ToYaml(marshallable interface{}) (string, error) {
+	marshaledYaml, err := yaml.Marshal(marshallable)
 	return string(marshaledYaml), err
 }
 

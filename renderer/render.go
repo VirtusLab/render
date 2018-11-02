@@ -10,16 +10,28 @@ import (
 	"github.com/VirtusLab/render/renderer/configuration"
 )
 
+const (
+	// MissingKeyInvalidOption is the renderer option to continue execution on missing key and print "<no value>"
+	MissingKeyInvalidOption = "missingkey=invalid"
+	// MissingKeyErrorOption is the renderer option to stops execution immediately with an error on missing key
+	MissingKeyErrorOption = "missingkey=error"
+)
+
+// Renderer structure holds configuration and options
 type Renderer struct {
 	configuration configuration.Configuration
+	options       []string
 }
 
-func New(configuration configuration.Configuration) *Renderer {
+// New creates a new renderer with the specified configuration and zero or more options
+func New(configuration configuration.Configuration, opts ...string) *Renderer {
 	return &Renderer{
 		configuration: configuration,
+		options:       opts,
 	}
 }
 
+// RenderFile is used to render files by path, see also Render
 func (r *Renderer) RenderFile(inputPath, outputPath string) error {
 	input, err := files.ReadInput(inputPath)
 	if err != nil {
@@ -42,12 +54,20 @@ func (r *Renderer) RenderFile(inputPath, outputPath string) error {
 	return nil
 }
 
+// Render is the main rendering function, see also SimpleRender, RenderWith, Configuration and ExtraFunctions
 func (r *Renderer) Render(templateName, rawTemplate string) (string, error) {
-	extraFunctions := sprig.TxtFuncMap()
-	extraFunctions["render"] = r.render
-	extraFunctions["readFile"] = r.ReadFile
-	extraFunctions["toYaml"] = r.ToYaml
-	tmpl, err := template.New(templateName).Funcs(extraFunctions).Parse(rawTemplate)
+	return r.RenderWith(templateName, rawTemplate, r.ExtraFunctions())
+}
+
+// SimpleRender is a simple rendering function, also used as a custom template function
+// to allow in-template recursive rendering, see also Render, RenderWith
+func (r *Renderer) SimpleRender(rawTemplate string) (string, error) {
+	return r.Render("nameless", rawTemplate)
+}
+
+// RenderWith is the basic rendering function that takes extraFunctions as an argument
+func (r *Renderer) RenderWith(templateName, rawTemplate string, extraFunctions template.FuncMap) (string, error) {
+	tmpl, err := template.New(templateName).Funcs(extraFunctions).Option(r.options...).Parse(rawTemplate)
 	if err != nil {
 		logrus.Errorf("Can't parse the template file: %v", err)
 		return "", err
@@ -62,6 +82,12 @@ func (r *Renderer) Render(templateName, rawTemplate string) (string, error) {
 	return buffer.String(), nil
 }
 
-func (r *Renderer) render(rawTemplate string) (string, error) {
-	return r.Render("inner", rawTemplate)
+// ExtraFunctions provides additional template functions to the text/template ones,
+// it adds sprig functions and custom functions
+func (r *Renderer) ExtraFunctions() template.FuncMap {
+	extraFunctions := sprig.TxtFuncMap()
+	extraFunctions["render"] = r.SimpleRender
+	extraFunctions["readFile"] = r.ReadFile
+	extraFunctions["toYaml"] = r.ToYaml
+	return extraFunctions
 }

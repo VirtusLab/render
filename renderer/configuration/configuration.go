@@ -12,15 +12,19 @@ import (
 )
 
 const (
+	// RootKey is an special configuration key key used by e.g. the Base and Root functions
 	RootKey = "root"
 )
 
 var (
-	varArgRegexp = matcher.NewMust(`^(?P<name>\S+)=(?P<value>\S*)$`)
+	// VarArgRegexp defines the extra variable parameter format
+	VarArgRegexp = matcher.NewMust(`^(?P<name>\S+)=(?P<value>\S*)$`)
 )
 
+// Configuration is a map used to render the templates with
 type Configuration map[string]interface{}
 
+// New creates a new configuration from one or more configurations, to be used with other helper functions
 func New(configs ...Configuration) Configuration {
 	var accumulator = make(Configuration)
 	for _, config := range configs {
@@ -30,6 +34,8 @@ func New(configs ...Configuration) Configuration {
 	return accumulator
 }
 
+// All creates a configuration from one or more configuration file paths
+// and one or more extra variables in addition to base configuration
 func All(configPaths, vars []string) (Configuration, error) {
 	baseConfig, err := Base()
 	if err != nil {
@@ -49,6 +55,7 @@ func All(configPaths, vars []string) (Configuration, error) {
 	return New(baseConfig, filesConfig, varsConfig), nil
 }
 
+// Base creates a basic configuration required for some of the functions, it is recommended to use it
 func Base() (Configuration, error) {
 	pwd, err := files.Pwd()
 	if err != nil {
@@ -61,6 +68,7 @@ func Base() (Configuration, error) {
 	return c, nil
 }
 
+// WithFiles creates a configuration from one or more configuration file paths
 func WithFiles(configPaths []string) (Configuration, error) {
 	var accumulator = make(Configuration)
 	for i, configPath := range configPaths {
@@ -85,11 +93,12 @@ func WithFiles(configPaths []string) (Configuration, error) {
 	return accumulator, nil
 }
 
+// WithVars creates a configuration from one or more extra variables (key=value), see also VarArgRegexp
 func WithVars(extraParams []string) (Configuration, error) {
 	var config = make(Configuration)
 	for _, v := range extraParams {
-		if varArgRegexp.Match(v) {
-			groups := varArgRegexp.MatchGroups(v)
+		if VarArgRegexp.Match(v) {
+			groups := VarArgRegexp.MatchGroups(v)
 			name := groups["name"]
 			value := groups["value"]
 			logrus.Debugf("Extra var: %s=%s", name, value)
@@ -103,6 +112,7 @@ func WithVars(extraParams []string) (Configuration, error) {
 	return config, nil
 }
 
+// MergeConfigurations merges two configurations into one, any existing values will be overridden
 func MergeConfigurations(dst *Configuration, src Configuration) error {
 	err := mergo.Merge(dst, src)
 	if err != nil {

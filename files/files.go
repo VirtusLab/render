@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	// ErrExpectedStdin indicates that an stdin pipe was expected but not present
 	ErrExpectedStdin = errors.New("expected a pipe stdin")
 )
 
@@ -67,6 +68,7 @@ func WriteOutput(outputPath string, outputContent []byte, perm os.FileMode) erro
 	return nil
 }
 
+// IsNotEmptyAndExists checks the given file exists and is not empty
 func IsNotEmptyAndExists(file string) bool {
 	if len(file) == 0 {
 		logrus.Infof("Configuration file path is empty")
@@ -87,6 +89,7 @@ func IsNotEmptyAndExists(file string) bool {
 	return true
 }
 
+// ToAbsPath turns a relative path into an absolute path with the given root path, absolute paths are ignored
 func ToAbsPath(path, root string) (string, error) {
 	if filepath.IsAbs(path) {
 		return path, nil
@@ -94,6 +97,7 @@ func ToAbsPath(path, root string) (string, error) {
 	return filepath.Join(root, path), nil
 }
 
+// Pwd returns the process working directory
 func Pwd() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {

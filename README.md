@@ -4,16 +4,20 @@
 [![Travis CI](https://img.shields.io/travis/VirtusLab/render.svg)](https://travis-ci.org/VirtusLab/render)
 [![Github All Releases](https://img.shields.io/github/downloads/VirtusLab/render/total.svg)](https://github.com/VirtusLab/render/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/VirtusLab/render "Go Report Card")](https://goreportcard.com/report/github.com/VirtusLab/render)
+[![GoDoc](https://godoc.org/github.com/VirtusLab/render?status.svg "GoDoc Documentation")](https://godoc.org/github.com/VirtusLab/render/renderer)
 
-Universal file renderer based on [go-template](https://golang.org/pkg/text/template/) 
-and [Sprig](http://masterminds.github.io/sprig/) functions. 
+Universal data-driven templates rendering for generating textual output. The renderer extends 
+[go-template](https://golang.org/pkg/text/template/) and [Sprig](http://masterminds.github.io/sprig/) functions. 
 
-If you want to read more about the underlying reason for creating this library and our initial use of it, take a look at this [blog post](https://medium.com/virtuslab/helm-alternative-d6568aa9d40b) (hint: Kubernetes config files rendering). 
+If you are interested in one of the use cases, take a look at this [blog post](https://medium.com/virtuslab/helm-alternative-d6568aa9d40b) 
+about Kubernetes resources rendering. Also see [Helm compatibility](README.md#helm-compatibility).
 
 * [Installation](README.md#installation)
   * [Binaries](README.md#binaries)
   * [Via Go](README.md#via-go)
 * [Usage](README.md#usage)
+  * [Command line](README.md#command-line)
+  * [Notable standard and sprig functions](README.md#notable-standard-and-sprig-functions)
   * [Custom functions](README.md#custom-functions)
   * [Helm compatibility](README.md#helm-compatibility)
   * [Limitations and future work](README.md#limitations-and-future-work)
@@ -65,13 +69,64 @@ GLOBAL OPTIONS:
 - `--in`, `--out` take only files (not directories) at the moment, `--in` will consume any file as long as it can be parsed
 - `stdin` and `stdout` can be used instead of `--in` and `--out`
 - `--config` accepts any YAML file, can be used multiple times, the values of the configs will be merged
-- `--set`, `--var` are the same (one is used in Helm, the other in Terraform), we provide both for convinience, any values set here **will override** values form configuration files
+- `--set`, `--var` are the same (one is used in Helm, the other in Terraform), we provide both for convenience, any values set here **will override** values form configuration files
+
+#### Command line
+
+Example usage of `render` with `stdin`, `stdout` and `--var`:
+```console
+$ echo "something {{ .value }}" | render --var "value=new"
+something new
+```
+
+Example usage of `render` with `--in`, `--out` and `--config`:
+```console
+$ echo "something {{ .value }}" > test.txt.tmpl
+$ echo "value: new" > test.config.yaml
+$ ./render --in test.txt.tmpl --out test.txt --config test.config.yaml
+$ cat test.txt
+something new
+```
+
+Also see a [more advanced tempalte](examples/example.yaml.tmpl) example.
+
+#### As a library
+
+```go
+package example
+
+import (
+	"github.com/VirtusLab/render/renderer"
+    "github.com/VirtusLab/render/renderer/configuration"
+)
+
+func CustomRender(template string) (string, error) {
+    config := configuration.Configuration{}
+    r := renderer.New(config, renderer.MissingKeyErrorOption)
+    return r.Render("nameless", template)
+}
+```
+
+See also `RenderWith` function that takes a custom functions map.
+
+#### Notable standard and sprig functions
+
+- [`indent`](https://masterminds.github.io/sprig/strings.html#indent)
+- [`default`](https://masterminds.github.io/sprig/defaults.html#default)
+- [`ternary`](https://masterminds.github.io/sprig/defaults.html#ternary)
+- [`toJson`](https://masterminds.github.io/sprig/defaults.html#tojson)
+- [`b64enc`, `b64dec`](https://masterminds.github.io/sprig/encoding.html)
+
+All syntax and functions:
+- [Go template functions](https://golang.org/pkg/text/template)
+- [Sprig functions](http://masterminds.github.io/sprig)
 
 #### Custom functions
 
 - `render` - invokes the `render` from inside of the template, making the renderer recursive, [see example](examples/example.yaml.tmpl#L10), can be combined with other functions, e.g. `b64dec`, `b64enc`, `readFile`
 - `readFile` - reads a file from a given path, relative paths are translated to absolute paths, based on `root` function
 - `root` - the root path for rendering, used relative to absolute path translation in any file based operations; by default `PWD` is used, can be overridden with a `--config` or `--set`
+- `toYaml` - renders a configuration data structure fragment in YAML format
 
 #### Helm compatibility
 
@@ -103,4 +158,4 @@ Planned new features:
 
 ## The name
 
-We believe in obvious names. It renders. It's a *verb*, `render`.
+We believe in obvious names. It renders. It's a *verb*. It's `render`.
