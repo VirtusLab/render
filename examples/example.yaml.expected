@@ -9,3 +9,7 @@ nested:
 from_file:
   inner:
   - value: 2
+
+from_gzip: "compressed content"
+
+to_gzip: "H4sIAAAAAAAA/w=="

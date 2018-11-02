@@ -1,7 +1,13 @@
 package renderer
 
 import (
+	"bytes"
+	"compress/gzip"
+	"io"
 	"io/ioutil"
+	"reflect"
+
+	"github.com/pkg/errors"
 
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer/configuration"
@@ -34,9 +40,61 @@ func (r *Renderer) ReadFile(file string) (string, error) {
 }
 
 // ToYaml is a template function, it turns a marshallable structure into a YAML fragment
-func (r *Renderer) ToYaml(marshallable interface{}) (string, error) {
+func ToYaml(marshallable interface{}) (string, error) {
 	marshaledYaml, err := yaml.Marshal(marshallable)
 	return string(marshaledYaml), err
 }
 
-// TODO: gzip, ungzip, encrypt, decrypt
+// Gzip compresses the input using gzip algorithm
+func Gzip(input interface{}) (string, error) {
+	inputAsBytes, err := asBytes(input)
+	if err != nil {
+		return "", err
+	}
+
+	var b bytes.Buffer
+	w := gzip.NewWriter(&b)
+	defer w.Close()
+
+	_, err = w.Write(inputAsBytes)
+	if err != nil {
+		return "", err
+	}
+
+	return b.String(), nil
+}
+
+// Ungzip un-compresses the input using gzip algorithm
+func Ungzip(input interface{}) (string, error) {
+	inputAsBytes, err := asBytes(input)
+	if err != nil {
+		return "", err
+	}
+
+	in := bytes.NewBuffer(inputAsBytes)
+	r, err := gzip.NewReader(in)
+	if err != nil {
+		return "", err
+	}
+	defer r.Close()
+
+	var out bytes.Buffer
+	_, err = io.Copy(&out, r)
+	if err != nil {
+		return "", err
+	}
+	return out.String(), nil
+}
+
+func asBytes(input interface{}) ([]byte, error) {
+	switch input.(type) {
+	case []byte:
+		return input.([]byte), nil
+	case string:
+		return []byte(input.(string)), nil
+	default:
+		return nil, errors.Errorf("expected []byte or string, got: '%v'", reflect.TypeOf(input))
+	}
+}
+
+// TODO: encrypt, decrypt

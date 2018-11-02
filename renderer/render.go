@@ -98,6 +98,8 @@ func (r *Renderer) ExtraFunctions() template.FuncMap {
 	extraFunctions := sprig.TxtFuncMap()
 	extraFunctions["render"] = r.SimpleRender
 	extraFunctions["readFile"] = r.ReadFile
-	extraFunctions["toYaml"] = r.ToYaml
+	extraFunctions["toYaml"] = ToYaml
+	extraFunctions["ungzip"] = Ungzip
+	extraFunctions["gzip"] = Gzip
 	return extraFunctions
 }

@@ -8,3 +8,8 @@ nested:
 
 inner:
   path: examples/inner.yaml.tmpl
+
+compressed:
+  encoded: "H4sIAEJ93FsAA0vOzy0oSi0uTk1RSM7PK0nNKwEAmEAxaRIAAAA="
+
+embed: "content to be embedded"

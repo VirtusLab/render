@@ -8,3 +8,7 @@ nested:
 
 from_file:
   {{ readFile .inner.path | render }}
+
+from_gzip: {{ .compressed.encoded | b64dec | ungzip | quote }}
+
+to_gzip: {{ .embed | gzip | b64enc | quote }}
