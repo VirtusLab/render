@@ -123,10 +123,10 @@ All syntax and functions:
 
 #### Custom functions
 
-- `render` - invokes the `render` from inside of the template, making the renderer recursive, [see example](examples/example.yaml.tmpl#L10), can be combined with other functions, e.g. `b64dec`, `b64enc`, `readFile`
+- `render` - calls the `render` from inside of the template, making the renderer recursive, [see example](examples/example.yaml.tmpl#L10), can be combined with other functions, e.g. `b64dec`, `b64enc`, `readFile`
 - `readFile` - reads a file from a given path, relative paths are translated to absolute paths, based on `root` function
 - `root` - the root path for rendering, used relative to absolute path translation in any file based operations; by default `PWD` is used, can be overridden with a `--config` or `--set`
-- `toYaml` - renders a configuration data structure fragment in YAML format
+- `toYaml` - provides a configuration data structure fragment as a YAML format
 
 #### Helm compatibility
 

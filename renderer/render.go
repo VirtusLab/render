@@ -82,8 +82,16 @@ func (r *Renderer) RenderWith(templateName, rawTemplate string, extraFunctions t
 	return buffer.String(), nil
 }
 
-// ExtraFunctions provides additional template functions to the text/template ones,
-// it adds sprig functions and custom functions
+/*
+ExtraFunctions provides additional template functions to the text/template ones,
+it adds sprig functions and custom functions
+
+  - render - calls the render from inside of the template, making the renderer recursive
+  - readFile - reads a file from a given path, relative paths are translated to absolute paths, based on root function
+  - root - the root path for rendering, used relative to absolute path translation in any file based operations
+  - toYaml - provides a configuration data structure fragment as a YAML format
+
+*/
 func (r *Renderer) ExtraFunctions() template.FuncMap {
 	extraFunctions := sprig.TxtFuncMap()
 	extraFunctions["render"] = r.SimpleRender
