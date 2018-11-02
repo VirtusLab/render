@@ -10,13 +10,13 @@ Actions can be combined using UNIX-like pipelines.
 
 The input text for a template is UTF-8-encoded text in any format.
 
-"""
-Detailed documentation of the standard functions can be found here:
+See renderer.ExtraFunctions for our custom functions.
+
+Detailed documentation on the syntax and available functions can be found here:
+
   * https://golang.org/pkg/text/template
   * http://masterminds.github.io/sprig
-"""
-
-See renderer.ExtraFunctions for our custom functions.
+  * https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions
 
 */
 package renderer
