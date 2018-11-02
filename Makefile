@@ -21,23 +21,12 @@ BUILDDIR := ${PREFIX}/cross
 VERSION := $(shell cat VERSION.txt)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
+GITIGNOREDBUTTRACKEDCHANGES := $(shell git ls-files -i --exclude-standard)
 ifneq ($(GITUNTRACKEDCHANGES),)
 	GITCOMMIT := $(GITCOMMIT)-dirty
 endif
-
-ifdef TRAVIS
-	ifneq ($(TRAVIS_TAG),)
-		LATEST_TAG := "latest"
-		VERSION_TAG := "$(VERSION)"
-	else
-		LATEST_TAG := "v$(GITCOMMIT)"
-		VERSION_TAG := "v$(GITCOMMIT)"
-	endif
-	BUILD_TAG := "travis-$(TRAVIS_BUILD_NUMBER)-$(TRAVIS_BRANCH)-$(GITCOMMIT)"
-else
-	LATEST_TAG := "latest"
-	VERSION_TAG := "v$(VERSION)"
-	BUILD_TAG := "local-$(GITCOMMIT)"
+ifneq ($(GITIGNOREDBUTTRACKEDCHANGES),)
+    GITCOMMIT := $(GITCOMMIT)-dirty
 endif
 
 CTIMEVAR=-X $(PKG)/version.GITCOMMIT=$(GITCOMMIT) -X $(PKG)/version.VERSION=$(VERSION)
