@@ -6,7 +6,9 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/VirtusLab/render "Go Report Card")](https://goreportcard.com/report/github.com/VirtusLab/render)
 
 Universal file renderer based on [go-template](https://golang.org/pkg/text/template/) 
-and [Sprig](http://masterminds.github.io/sprig/) functions.
+and [Sprig](http://masterminds.github.io/sprig/) functions. 
+
+If you want to read more about the underlying reason for creating this library and our initial use of it, take a look at this [blog post](https://medium.com/virtuslab/helm-alternative-d6568aa9d40b) (hint: Kubernetes config files rendering). 
 
 * [Installation](README.md#installation)
   * [Binaries](README.md#binaries)
