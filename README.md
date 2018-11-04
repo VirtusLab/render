@@ -93,7 +93,7 @@ $ cat test.txt
 something new
 ```
 
-Also see a [more advanced tempalte](examples/example.yaml.tmpl) example.
+Also see a [more advanced template](examples/example.yaml.tmpl) example.
 
 #### As a library
 
