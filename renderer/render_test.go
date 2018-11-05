@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/VirtusLab/render/renderer/configuration"
-
 	"github.com/Sirupsen/logrus"
 	"github.com/Sirupsen/logrus/hooks/test"
+	"github.com/VirtusLab/render/renderer/configuration"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,7 +49,7 @@ func TestRenderer_Render(t *testing.T) {
 				assert.Equal(t, expected, result, tc.name)
 				assert.Equal(t, 1, len(tc.logHook.Entries))
 				assert.Equal(t, logrus.ErrorLevel, tc.logHook.LastEntry().Level)
-				assert.Contains(t, tc.logHook.LastEntry().Message, "Can't parse the template file:")
+				assert.Contains(t, tc.logHook.LastEntry().Message, "Can't parse the template")
 			},
 		}, {
 			name: "render render",

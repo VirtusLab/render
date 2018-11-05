@@ -2,12 +2,14 @@ package renderer
 
 import (
 	"bytes"
+	"reflect"
 	"text/template"
 
 	"github.com/Masterminds/sprig"
 	"github.com/Sirupsen/logrus"
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer/configuration"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -35,19 +37,25 @@ func New(configuration configuration.Configuration, opts ...string) *Renderer {
 func (r *Renderer) RenderFile(inputPath, outputPath string) error {
 	input, err := files.ReadInput(inputPath)
 	if err != nil {
-		logrus.Debugf("Can't open the template file: %v", err)
+		logrus.Debugf("Can't open the template: %v", err)
 		return err
 	}
 
-	result, err := r.Render(outputPath, string(input))
+	var templateName string
+	if inputPath == "" {
+		templateName = "stdin"
+	} else {
+		templateName = inputPath
+	}
+
+	result, err := r.Render(templateName, string(input))
 	if err != nil {
-		logrus.Debugf("Can't render the template: %v", err)
 		return err
 	}
 
 	err = files.WriteOutput(outputPath, []byte(result), 0644)
 	if err != nil {
-		logrus.Debugf("Can't save the rendered file: %v", err)
+		logrus.Debugf("Can't save the rendered: %v", err)
 		return err
 	}
 
@@ -69,15 +77,22 @@ func (r *Renderer) SimpleRender(rawTemplate string) (string, error) {
 func (r *Renderer) RenderWith(templateName, rawTemplate string, extraFunctions template.FuncMap) (string, error) {
 	tmpl, err := template.New(templateName).Funcs(extraFunctions).Option(r.options...).Parse(rawTemplate)
 	if err != nil {
-		logrus.Errorf("Can't parse the template file: %v", err)
+		logrus.Errorf("Can't parse the template; %v", err)
 		return "", err
 	}
 
 	var buffer bytes.Buffer
 	err = tmpl.Execute(&buffer, r.configuration)
 	if err != nil {
-		logrus.Errorf("Can't render the template file: %v", err)
-		return "", err
+		retErr := err
+		logrus.Debugf("(%v): %v", reflect.TypeOf(err), err)
+		if e, ok := err.(template.ExecError); ok {
+			retErr = errors.Wrapf(err,
+				"Error evaluating the template named: '%s'", e.Name)
+		} else {
+			retErr = errors.Wrap(err, "Can't render the template")
+		}
+		return "", retErr
 	}
 	return buffer.String(), nil
 }

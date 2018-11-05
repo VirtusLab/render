@@ -111,13 +111,12 @@ func action(_ *cli.Context) error {
 		return err
 	}
 
-	r := renderer.New(config)
+	r := renderer.New(config, renderer.MissingKeyErrorOption)
 	err = r.RenderFile(inputPath, outputPath)
 	if err != nil {
 		if err == files.ErrExpectedStdin {
 			return fmt.Errorf("expected either stdin or --in parameter, for usage use --help")
 		}
-		logrus.Debugf("Rendering failed: %s", err)
 		return err
 	}
 
