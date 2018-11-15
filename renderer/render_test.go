@@ -107,6 +107,40 @@ func TestRenderer_Render_Pipe(t *testing.T) {
 	})
 }
 
+func TestRenderer_Render_Validate_Defualt(t *testing.T) {
+	Run(t, TestCase{
+		name: "validation",
+		f: func(tc TestCase) {
+			config := configuration.Configuration{}
+			err := New(config).Validate()
+			assert.NoError(t, err, tc.name)
+		},
+	})
+}
+
+//func TestRenderer_Render_EmbedDecrypt(t *testing.T) {
+//	Run(t, TestCase{
+//		name: "parse nested",
+//		f: func(tc TestCase) {
+//			input := `/* multi-line test file */
+//{{ .key }}: {{ embedDecrypt .value }}`
+//
+//			expected := `/* multi-line test file */
+//awe: {{ decrypt "some" }}`
+//
+//			config := configuration.Configuration{
+//				"key":   "awe",
+//				"value": "some",
+//			}
+//
+//			result, err := New(config).Render(tc.name, input)
+//
+//			assert.NoError(t, err, tc.name)
+//			assert.Equal(t, expected, result, tc.name)
+//		},
+//	})
+//}
+
 func Run(t *testing.T, c TestCase) {
 	logrus.SetLevel(logrus.DebugLevel)
 	hook := test.NewGlobal()
