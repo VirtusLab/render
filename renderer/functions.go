@@ -7,11 +7,10 @@ import (
 	"io/ioutil"
 	"reflect"
 
-	"github.com/pkg/errors"
-
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer/configuration"
 	"github.com/ghodss/yaml"
+	"github.com/pkg/errors"
 )
 
 func (r *Renderer) root() (string, error) {

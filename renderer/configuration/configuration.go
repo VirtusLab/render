@@ -24,6 +24,12 @@ var (
 // Configuration is a map used to render the templates with
 type Configuration map[string]interface{}
 
+// Validate checks the internal state and returns error if necessary
+func (configurations Configuration) Validate() error {
+	// TODO(pprazak): could/should we do some validation here?
+	return nil
+}
+
 // New creates a new configuration from one or more configurations, to be used with other helper functions
 func New(configs ...Configuration) Configuration {
 	var accumulator = make(Configuration)
