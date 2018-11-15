@@ -1,6 +1,6 @@
 # render
 
-[![Version](https://img.shields.io/badge/version-v0.0.4-brightgreen.svg)](https://github.com/VirtusLab/render/releases/tag/v0.0.4)
+[![Version](https://img.shields.io/badge/version-v0.0.5-brightgreen.svg)](https://github.com/VirtusLab/render/releases/tag/v0.0.5)
 [![Travis CI](https://img.shields.io/travis/VirtusLab/render.svg)](https://travis-ci.org/VirtusLab/render)
 [![Github All Releases](https://img.shields.io/github/downloads/VirtusLab/render/total.svg)](https://github.com/VirtusLab/render/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/VirtusLab/render "Go Report Card")](https://goreportcard.com/report/github.com/VirtusLab/render)
@@ -52,7 +52,7 @@ USAGE:
    render [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.4-cf8e3d3
+   v0.0.5-cf8e3d3
 
 AUTHOR:
    VirtusLab
@@ -112,7 +112,7 @@ func CustomRender(template string) (string, error) {
 }
 ```
 
-See also [`RenderWith`](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.RenderWith) function that takes a custom functions map.
+See also [`other functions`](https://godoc.org/github.com/VirtusLab/render/renderer).
 
 Also see [tests](https://github.com/VirtusLab/render/blob/master/renderer/render_test.go) for more usage examples.
 
