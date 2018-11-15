@@ -7,10 +7,10 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
-	"github.com/Sirupsen/logrus"
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer/configuration"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -182,7 +182,5 @@ func (r *Renderer) ExtraFunctions() template.FuncMap {
 	extraFunctions["toYaml"] = ToYaml
 	extraFunctions["ungzip"] = Ungzip
 	extraFunctions["gzip"] = Gzip
-	//extraFunctions["decryptAws"] = DecryptAWS
-	//extraFunctions["embedDecryptAws"] = r.EmbedDecryptAws
 	return extraFunctions
 }

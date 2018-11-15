@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/renderer/configuration"
 	"github.com/VirtusLab/render/version"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 )
 

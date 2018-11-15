@@ -3,12 +3,12 @@ package configuration
 import (
 	"io/ioutil"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/matcher"
 	"github.com/ghodss/yaml"
 	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 const (
