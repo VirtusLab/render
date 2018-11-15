@@ -10,6 +10,10 @@ include $(config)
 # Set an output prefix, which is the local directory if not specified
 PREFIX?=$(shell pwd)
 
+# Set the main.go path for go command
+#BUILD_PATH := ./cmd/$(NAME)
+BUILD_PATH := .
+
 # Set any default go build tags
 BUILDTAGS :=
 
@@ -23,7 +27,7 @@ GITCOMMIT := $(shell git rev-parse --short HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
 GITIGNOREDBUTTRACKEDCHANGES := $(shell git ls-files -i --exclude-standard)
 ifneq ($(GITUNTRACKEDCHANGES),)
-	GITCOMMIT := $(GITCOMMIT)-dirty
+    GITCOMMIT := $(GITCOMMIT)-dirty
 endif
 ifneq ($(GITIGNOREDBUTTRACKEDCHANGES),)
     GITCOMMIT := $(GITCOMMIT)-dirty
@@ -36,12 +40,15 @@ GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 # List the GOOS and GOARCH to build
 GOOSARCHES = darwin/amd64 darwin/386 freebsd/amd64 freebsd/386 linux/arm linux/arm64 linux/amd64 linux/386 windows/amd64 windows/386
 
+PACKAGES = $(shell go list -f '{{.ImportPath}}/' ./... | grep -v vendor)
+
 ARGS ?= $(EXTRA_ARGS)
 
 .DEFAULT_GOAL := help
 
 .PHONY: all
 all: clean dep build verify install ## Test, build, install
+	@echo "+ $@"
 
 .PHONY: init
 init: ## Initializes this Makefile dependencies: dep, golint, staticcheck, checkmake
@@ -49,6 +56,7 @@ init: ## Initializes this Makefile dependencies: dep, golint, staticcheck, check
 	go get -u github.com/golang/dep/cmd/dep
 	go get -u github.com/golang/lint/golint
 	go get -u honnef.co/go/tools/cmd/staticcheck
+	go get -u golang.org/x/tools/cmd/goimports
 	go get -u github.com/mrtazz/checkmake
 
 .PHONY: dep
@@ -60,64 +68,69 @@ dep: ## Populates the vendor directory with dependencies
 build: $(NAME) ## Builds a dynamic executable or package
 	@echo "+ $@"
 
-$(NAME): *.go VERSION.txt
+$(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
 	@echo "+ $@"
-	go build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
+	go build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) $(BUILD_PATH)
 
 .PHONY: static
 static: ## Builds a static executable
 	@echo "+ $@"
 	CGO_ENABLED=0 go build \
 				-tags "$(BUILDTAGS) static_build" \
-				${GO_LDFLAGS_STATIC} -o $(NAME) .
+				${GO_LDFLAGS_STATIC} -o $(NAME) $(BUILD_PATH)
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed
 	@echo "+ $@"
-	@gofmt -s -l . | grep -v '.pb.go:' | grep -v vendor | tee /dev/stderr
+	@go fmt $(PACKAGES)
 
 .PHONY: lint
 lint: ## Verifies `golint` passes
 	@echo "+ $@"
-	@golint ./... | grep -v '.pb.go:' | grep -v vendor | tee /dev/stderr
+	@golint $(PACKAGES)
+
+.PHONY: goimports
+goimports: ## Verifies `goimports` passes
+	@echo "+ $@"
+	@goimports -l -e $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 .PHONY: test
 test: ## Runs the go tests
 	@echo "+ $@"
-	@go test -v -tags "$(BUILDTAGS) cgo" $(shell go list ./... | grep -v vendor)
+	@RUNNING_TESTS=1 go test -v -tags "$(BUILDTAGS) cgo" $(PACKAGES)
 
 .PHONY: vet
 vet: ## Verifies `go vet` passes
 	@echo "+ $@"
-	@go vet $(shell go list ./... | grep -v vendor) | grep -v '.pb.go:' | tee /dev/stderr
+	@go vet $(PACKAGES)
 
 .PHONY: staticcheck
 staticcheck: ## Verifies `staticcheck` passes
 	@echo "+ $@"
-	@staticcheck $(shell go list ./... | grep -v vendor) | grep -v '.pb.go:' | tee /dev/stderr
+	@staticcheck $(PACKAGES)
 
 .PHONY: install
-install: ## Installs the executable or package
+install: ## Installs the executable
 	@echo "+ $@"
-	@go install -tags "$(BUILDTAGS)" ${GO_LDFLAGS} .
+	@go install -tags "$(BUILDTAGS)" ${GO_LDFLAGS} $(BUILD_PATH)
 
 .PHONY: run
 run: ## Run the executable, you can use EXTRA_ARGS
 	@echo "+ $@"
-	@go run -tags "$(BUILDTAGS)" ${GO_LDFLAGS} main.go $(ARGS)
+	@go run -tags "$(BUILDTAGS)" ${GO_LDFLAGS} $(BUILD_PATH)/main.go $(ARGS)
 
 define buildpretty
 mkdir -p $(BUILDDIR)/$(1)/$(2);
 GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build \
-	 -o $(BUILDDIR)/$(1)/$(2)/$(NAME) \
-	 -a -tags "$(BUILDTAGS) static_build netgo" \
-	 -installsuffix netgo ${GO_LDFLAGS_STATIC} .;
+		-o $(BUILDDIR)/$(1)/$(2)/$(NAME) \
+		-a -tags "$(BUILDTAGS) static_build netgo" \
+		-installsuffix netgo ${GO_LDFLAGS_STATIC} $(BUILD_PATH);
 md5sum $(BUILDDIR)/$(1)/$(2)/$(NAME) > $(BUILDDIR)/$(1)/$(2)/$(NAME).md5;
 sha256sum $(BUILDDIR)/$(1)/$(2)/$(NAME) > $(BUILDDIR)/$(1)/$(2)/$(NAME).sha256;
 endef
 
 .PHONY: cross
-cross: *.go VERSION.txt ## Builds the cross-compiled binaries, creating a clean directory structure (eg. GOOS/GOARCH/binary)
+cross: $(wildcard *.go) $(wildcard */*.go) VERSION.txt ## Builds the cross-compiled binaries, creating a clean directory structure (eg. GOOS/GOARCH/binary)
 	@echo "+ $@"
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildpretty,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
 
@@ -125,13 +138,13 @@ define buildrelease
 GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build \
 	 -o $(BUILDDIR)/$(NAME)-$(1)-$(2) \
 	 -a -tags "$(BUILDTAGS) static_build netgo" \
-	 -installsuffix netgo ${GO_LDFLAGS_STATIC} .;
+	 -installsuffix netgo ${GO_LDFLAGS_STATIC} $(BUILD_PATH);
 md5sum $(BUILDDIR)/$(NAME)-$(1)-$(2) > $(BUILDDIR)/$(NAME)-$(1)-$(2).md5;
 sha256sum $(BUILDDIR)/$(NAME)-$(1)-$(2) > $(BUILDDIR)/$(NAME)-$(1)-$(2).sha256;
 endef
 
 .PHONY: release
-release: *.go VERSION.txt ## Builds the cross-compiled binaries, naming them in such a way for release (eg. binary-GOOS-GOARCH)
+release: $(wildcard *.go) $(wildcard */*.go) VERSION.txt ## Builds the cross-compiled binaries, naming them in such a way for release (eg. binary-GOOS-GOARCH)
 	@echo "+ $@"
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildrelease,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
 
@@ -141,8 +154,8 @@ verify: fmt lint vet staticcheck test ## Runs a fmt, lint, test and vet
 .PHONY: cover
 cover: ## Runs go test with coverage
 	@echo "" > coverage.txt
-	@for d in $(shell go list ./... | grep -v vendor); do \
-		go test -race -coverprofile=profile.out -covermode=atomic "$$d"; \
+	@for d in $(PACKAGES); do \
+		RUNNING_TESTS=1 go test -race -coverprofile=profile.out -covermode=atomic "$$d"; \
 		if [ -f profile.out ]; then \
 			cat profile.out >> coverage.txt; \
 			rm profile.out; \
@@ -153,9 +166,14 @@ cover: ## Runs go test with coverage
 clean: ## Cleanup any build binaries or packages
 	@echo "+ $@"
 	go clean
-	$(RM) $(NAME)
-	$(RM) test$(NAME)
-	$(RM) -r $(BUILDDIR)
+	$(RM) $(NAME) || echo "Couldn't delete, not there."
+	$(RM) test$(NAME) || echo "Couldn't delete, not there."
+	$(RM) -r $(BUILDDIR) || echo "Couldn't delete, not there."
+	$(RM) coverage.txt || echo "Couldn't delete, not there."
+
+.PHONY: spring-clean
+spring-clean: ## Cleanup git ignored files (interactive)
+	git clean -Xdi
 
 .PHONY: bump-version
 BUMP := patch
