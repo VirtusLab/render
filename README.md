@@ -52,7 +52,7 @@ USAGE:
    render [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.5-cf8e3d3
+   v0.0.5-3155324
 
 AUTHOR:
    VirtusLab
