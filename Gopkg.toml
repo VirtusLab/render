@@ -37,3 +37,7 @@
 [[constraint]]
   name = "github.com/Masterminds/sprig"
   version = "2.16.0"
+
+[[constraint]]
+  name = "github.com/VirtusLab/crypt"
+  version = "0.0.4"

@@ -173,6 +173,12 @@ it adds sprig functions and custom functions:
   - toYaml - provides a configuration data structure fragment as a YAML format
   - gzip - use gzip compression inside the templates, for best results use with b64enc
   - ungzip - use gzip extraction inside the templates, for best results use with b64dec
+  - encryptAWS - encrypts the data from inside of the template using AWS KMS, for best results use with gzip and b64enc
+  - decryptAWS - decrypts the data from inside of the template using AWS KMS, for best results use with ungzip and b64dec
+  - encryptGCP - encrypts the data from inside of the template using GCP KMS, for best results use with gzip and b64enc
+  - decryptGCP - decrypts the data from inside of the template using GCP KMS, for best results use with ungzip and b64dec
+  - encryptAzure - encrypts the data from inside of the template using Azure Key Vault, for best results use with gzip and b64enc
+  - decryptAzure - decrypts the data from inside of the template using Azure Key Vault, for best results use with ungzip and b64dec
 
 */
 func (r *Renderer) ExtraFunctions() template.FuncMap {
@@ -182,5 +188,11 @@ func (r *Renderer) ExtraFunctions() template.FuncMap {
 	extraFunctions["toYaml"] = ToYaml
 	extraFunctions["ungzip"] = Ungzip
 	extraFunctions["gzip"] = Gzip
+	extraFunctions["encryptAWS"] = EncryptAWS
+	extraFunctions["decryptAWS"] = DecryptAWS
+	extraFunctions["encryptGCP"] = EncryptGCP
+	extraFunctions["decryptGCP"] = DecryptGCP
+	extraFunctions["encryptAzure"] = EncryptAzure
+	extraFunctions["decryptAzure"] = DecryptAzure
 	return extraFunctions
 }
