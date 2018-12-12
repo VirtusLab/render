@@ -120,7 +120,7 @@ func WithVars(extraParams []string) (Configuration, error) {
 
 // MergeConfigurations merges two configurations into one, any existing values will be overridden
 func MergeConfigurations(dst *Configuration, src Configuration) error {
-	err := mergo.Merge(dst, src)
+	err := mergo.Merge(dst, src, mergo.WithOverride)
 	if err != nil {
 		return err
 	}
