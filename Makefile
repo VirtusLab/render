@@ -47,7 +47,7 @@ ARGS ?= $(EXTRA_ARGS)
 .DEFAULT_GOAL := help
 
 .PHONY: all
-all: clean dep build verify install ## Test, build, install
+all: clean dep verify build install ## Test, build, install
 	@echo "+ $@"
 
 .PHONY: init
@@ -149,7 +149,7 @@ release: $(wildcard *.go) $(wildcard */*.go) VERSION.txt ## Builds the cross-com
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildrelease,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
 
 .PHONY: verify
-verify: fmt lint vet staticcheck test ## Runs a fmt, lint, test and vet
+verify: fmt lint vet staticcheck goimports test ## Runs a fmt, lint, vet, staticcheck, goimports and test
 
 .PHONY: cover
 cover: ## Runs go test with coverage
