@@ -16,6 +16,7 @@ import (
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/files"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,11 +43,14 @@ func TestMain(m *testing.M) {
 	args := []string{"build", "-o", testBinaryName + exeSuffix}
 	out, err := exec.Command("go", args...).CombinedOutput()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "building %s failed: %v\n%s", testBinaryName, err, out)
+		_, err := fmt.Fprintf(os.Stderr, "building %s failed: %v\n%s", testBinaryName, err, out)
+		if err != nil {
+			logrus.Errorf("Unexpected: %s", err)
+		}
 		os.Exit(2)
 	}
 	// remove test binary
-	defer os.Remove(testBinaryName + exeSuffix)
+	defer func() { _ = os.Remove(testBinaryName + exeSuffix) }()
 
 	flag.Parse()
 	merr := m.Run()
@@ -84,9 +88,10 @@ func sh(ctx context.Context, stdin *string, prog string, args ...string) (stdout
 	if stdin != nil {
 		stdinPipe, err = cmd.StdinPipe()
 		if err != nil {
-			return "", "", errors.Wrap(err, "can't open stdin pipe")
+			err = errors.Wrap(err, "can't open stdin pipe")
+			return
 		}
-		defer stdinPipe.Close() // just to be sure
+		defer func() { _ = stdinPipe.Close() }() // just to be sure
 	}
 
 	// Set output to Byte Buffers
@@ -94,15 +99,20 @@ func sh(ctx context.Context, stdin *string, prog string, args ...string) (stdout
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
 
-	if err := cmd.Start(); err != nil {
+	if err = cmd.Start(); err != nil {
 		return outb.String(), errb.String(), err
 	}
 
 	if stdin != nil {
-		if _, err := io.WriteString(stdinPipe, *stdin); err != nil {
-			return "", "", errors.Wrap(err, "error writing to stdin pipe")
+		if _, err = io.WriteString(stdinPipe, *stdin); err != nil {
+			err = errors.Wrap(err, "error writing to stdin pipe")
+			return
 		}
-		stdinPipe.Close()
+		err = stdinPipe.Close() // must be called to flush the buffers
+		if err != nil {
+			err = errors.Wrap(err, "error closing the stdin pipe")
+			return
+		}
 	}
 
 	err = cmd.Wait()
