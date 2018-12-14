@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMatcher_MatchGroups(t *testing.T) {
@@ -77,5 +78,47 @@ func TestMatcher_MatchGroups(t *testing.T) {
 
 	for i, c := range cases {
 		t.Run(fmt.Sprintf("[%d] %s", i, c.name), func(t *testing.T) { c.f(c) })
+	}
+}
+
+func Test_matcher_Match(t *testing.T) {
+	type fields struct {
+		matcher Matcher
+	}
+	type args struct {
+		value string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   bool
+	}{
+		{
+			name:   "simple match",
+			fields: fields{matcher: NewMust("^[a-z]+[0-9]+")},
+			args: args{
+				value: "asdf1234",
+			},
+			want: true,
+		},
+		{
+			name:   "no match",
+			fields: fields{matcher: NewMust("^[a-z]+[0-9]+")},
+			args: args{
+				value: "1234asdf",
+			},
+			want: false,
+		},
+	}
+
+	logrus.SetLevel(logrus.DebugLevel)
+
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := tt.fields.matcher
+			got := m.Match(tt.args.value)
+			assert.Equal(t, tt.want, got, "[%d] matcher.Match() = %v, want %v", i, got, tt.want)
+		})
 	}
 }
