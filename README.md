@@ -165,13 +165,14 @@ Feel free to file [issues](https://github.com/VirtusLab/render/issues) or [pull 
 
 ## Development
 
-    mkdir $GOPATH/src/github.com/VirtusLab/
-    git clone 
+    export GOPATH=$HOME/go
+    export PATH=$PATH:$GOPATH/bin
+    
+    mkdir -p $GOPATH/src/github.com/VirtusLab
+    cd $GOPATH/src/github.com/VirtusLab/render
+    git clone git@github.com:VirtusLab/render.git
     
     go get -u github.com/golang/dep/cmd/dep
-    
-    export PATH=$PATH:$GOPATH/bin
-    cd $GOPATH/src/github.com/VirtusLab/render
     make all
 
 ## The name
