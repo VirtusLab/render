@@ -9,8 +9,8 @@
 Universal data-driven templates for generating textual output. Can be used as a single static binary (no dependencies)
 or as a golang library.
 
-The renderer extends 
-[go-template](https://golang.org/pkg/text/template/) and [Sprig](http://masterminds.github.io/sprig/) functions. 
+The render extends [go-template](https://golang.org/pkg/text/template/).
+It provides [Sprig](http://masterminds.github.io/sprig/) template functions and integration with [crypt](https://github.com/VirtusLab/crypt). 
 
 If you are interested in one of the use cases, take a look at this [blog post](https://medium.com/virtuslab/helm-alternative-d6568aa9d40b) 
 about Kubernetes resources rendering. Also see [Helm compatibility](README.md#helm-compatibility).
@@ -135,8 +135,14 @@ All syntax and functions:
 - `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
 - `toYaml` - provides a configuration data structure fragment as a YAML format
 - `gzip`, `ungzip` - use `gzip` compression and extraction inside the templates, for best results use with `b64enc` and `b64dec`
+- `encryptAWS` - encrypts the data from inside of the template using AWS KMS, for best results use with `gzip` and `b64enc`
+- `decryptAWS` - decrypts the data from inside of the template using AWS KMS, for best results use with `ungzip` and `b64dec`
+- `encryptGCP` - encrypts the data from inside of the template using GCP KMS, for best results use with `gzip` and `b64enc`
+- `decryptGCP` - decrypts the data from inside of the template using GCP KMS, for best results use with `ungzip` and `b64dec`
+- `encryptAzure` - encrypts the data from inside of the template using Azure Key Vault, for best results use with `gzip` and `b64enc`
+- `decryptAzure` - decrypts the data from inside of the template using Azure Key Vault, for best results use with `ungzip` and `b64dec`
 
-See also [example](examples/example.yaml.tmpl) template 
+See also [examples](examples)
 and a more [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).
 
 #### Helm compatibility
@@ -146,10 +152,6 @@ As of now, there is a limited Helm 2 Chart compatibility, simple Charts will ren
 There is no plan to implement full compatibility with Helm, because of unnecessary complexity that would bring.
 
 ## Limitations and future work
-
-#### Planned new functions
-
-- `encrypt`, `decrypt` - cloud KMS (AWS, Amazon, Google) based encryption for any data
 
 #### Planned new features
 
