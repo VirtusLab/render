@@ -18,7 +18,7 @@ const (
 
 var (
 	// VarArgRegexp defines the extra variable parameter format
-	VarArgRegexp = matcher.NewMust(`^(?P<name>\S+)=(?P<value>\S*)$`)
+	VarArgRegexp = matcher.Must(`^(?P<name>\S+)=(?P<value>\S*)$`)
 )
 
 // Configuration is a map used to render the templates with
@@ -31,13 +31,16 @@ func (configurations Configuration) Validate() error {
 }
 
 // New creates a new configuration from one or more configurations, to be used with other helper functions
-func New(configs ...Configuration) Configuration {
+func New(configs ...Configuration) (Configuration, error) {
 	var accumulator = make(Configuration)
 	for _, config := range configs {
-		MergeConfigurations(&accumulator, config)
+		err := MergeConfigurations(&accumulator, config)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return accumulator
+	return accumulator, nil
 }
 
 // All creates a configuration from one or more configuration file paths
@@ -58,7 +61,7 @@ func All(configPaths, vars []string) (Configuration, error) {
 		return nil, errors.Wrap(err, "can't parse extra configuration variables")
 	}
 
-	return New(baseConfig, filesConfig, varsConfig), nil
+	return New(baseConfig, filesConfig, varsConfig)
 }
 
 // Base creates a basic configuration required for some of the functions, it is recommended to use it
@@ -83,15 +86,18 @@ func WithFiles(configPaths []string) (Configuration, error) {
 			b, err := ioutil.ReadFile(configPath)
 			if err != nil {
 				logrus.Errorf("Can't open the configuration file: %v", err)
-				return nil, err
+				return nil, errors.WithStack(err)
 			}
 			var config map[string]interface{}
 			err = yaml.Unmarshal(b, &config)
 			if err != nil {
 				logrus.Errorf("Can't parse the configuration file: %v", err)
+				return nil, errors.WithStack(err)
+			}
+			err = MergeConfigurations(&accumulator, config)
+			if err != nil {
 				return nil, err
 			}
-			MergeConfigurations(&accumulator, config)
 		}
 	}
 	logrus.Debugf("Configuration from files: %v", accumulator)
@@ -111,6 +117,7 @@ func WithVars(extraParams []string) (Configuration, error) {
 			config[name] = value
 		} else {
 			logrus.Errorf("Expected a valid extra parameter: '%s'", v)
+			return nil, errors.Errorf("invalid parameter: '%s'", v)
 		}
 	}
 
@@ -122,7 +129,7 @@ func WithVars(extraParams []string) (Configuration, error) {
 func MergeConfigurations(dst *Configuration, src Configuration) error {
 	err := mergo.Merge(dst, src)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 	return nil
 }
