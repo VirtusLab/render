@@ -19,9 +19,7 @@ func TestMatcher_MatchGroups(t *testing.T) {
 
 	standard := func(tc TestCase) {
 		m, err := New(tc.expr)
-		if err != nil {
-			t.Errorf("[%s] unexpected error: %s", tc.name, err.Error())
-		}
+		assert.NoError(t, err)
 		for value, expected := range tc.pairs {
 			result := m.MatchGroups(value)
 			if !reflect.DeepEqual(result, expected) {
@@ -67,9 +65,7 @@ func TestMatcher_MatchGroups(t *testing.T) {
 			expr: "<?:[",
 			f: func(tc TestCase) {
 				_, err := New(tc.expr)
-				if err == nil {
-					t.Errorf("[%s] expected an error", tc.name)
-				}
+				assert.Error(t, err)
 			},
 		},
 	}
@@ -95,8 +91,15 @@ func Test_matcher_Match(t *testing.T) {
 		want   bool
 	}{
 		{
+			name:   "empty",
+			fields: fields{matcher: Must("^[a-z]+[0-9]+")},
+			args: args{
+				value: "",
+			},
+			want: false,
+		}, {
 			name:   "simple match",
-			fields: fields{matcher: NewMust("^[a-z]+[0-9]+")},
+			fields: fields{matcher: Must("^[a-z]+[0-9]+")},
 			args: args{
 				value: "asdf1234",
 			},
@@ -104,7 +107,7 @@ func Test_matcher_Match(t *testing.T) {
 		},
 		{
 			name:   "no match",
-			fields: fields{matcher: NewMust("^[a-z]+[0-9]+")},
+			fields: fields{matcher: Must("^[a-z]+[0-9]+")},
 			args: args{
 				value: "1234asdf",
 			},

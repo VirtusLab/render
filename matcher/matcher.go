@@ -23,12 +23,13 @@ func New(expression string) (Matcher, error) {
 	return &matcher{m}, nil
 }
 
-// NewMust creates a new regular expression matcher or panics
-func NewMust(expression string) Matcher {
+// Must creates a new regular expression matcher or panics
+func Must(expression string) Matcher {
 	m := regexp.MustCompile(expression)
 	return &matcher{m}
 }
 
+// Match matches a given regular expression on a string
 func (m *matcher) Match(value string) bool {
 	return m.matcher.MatchString(value)
 }
