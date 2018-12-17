@@ -60,7 +60,10 @@ func main() {
 	}
 
 	app.CommandNotFound = func(c *cli.Context, command string) {
-		fmt.Fprintf(cli.ErrWriter, "There is no %q command.\n", command)
+		_, err := fmt.Fprintf(cli.ErrWriter, "There is no %q command.\n", command)
+		if err != nil {
+			logrus.Errorf("Unexpected error: %s", err)
+		}
 		cli.OsExiter(1)
 	}
 	app.OnUsageError = func(c *cli.Context, err error, isSubcommand bool) error {
@@ -68,7 +71,10 @@ func main() {
 			return err
 		}
 
-		fmt.Fprintf(cli.ErrWriter, "WRONG: %v\n", err)
+		_, err = fmt.Fprintf(cli.ErrWriter, "WRONG: %v\n", err)
+		if err != nil {
+			logrus.Errorf("Unexpected error: %s", err)
+		}
 		return nil
 	}
 	cli.OsExiter = func(c int) {
@@ -79,7 +85,10 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		fmt.Fprintf(cli.ErrWriter, "ERROR: %v\n", err)
+		_, err := fmt.Fprintf(cli.ErrWriter, "ERROR: %v\n", err)
+		if err != nil {
+			logrus.Errorf("Unexpected error: %s", err)
+		}
 		cli.OsExiter(1)
 	}
 }
