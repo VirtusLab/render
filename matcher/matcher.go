@@ -7,7 +7,7 @@ import (
 // Matcher is a regular expression matcher
 type Matcher interface {
 	Match(value string) bool
-	MatchGroups(value string) map[string]string
+	MatchGroups(value string) (map[string]string, bool)
 }
 
 type matcher struct {
@@ -29,19 +29,19 @@ func Must(expression string) Matcher {
 	return &matcher{m}
 }
 
-// Match matches a given regular expression on a string
+// Match for a given regular expression and a string
 func (m *matcher) Match(value string) bool {
 	return m.matcher.MatchString(value)
 }
 
 // MatchGroups for a given regular expression and a string,
 // it matches and returns the group values defined in the expression.
-func (m *matcher) MatchGroups(value string) map[string]string {
+func (m *matcher) MatchGroups(value string) (map[string]string, bool) {
 	groups := map[string]string{}
 
 	match := m.matcher.FindStringSubmatch(value)
 	if match == nil {
-		return groups // no match
+		return groups, false // no match
 	}
 
 	for i, name := range m.matcher.SubexpNames() {
@@ -50,5 +50,10 @@ func (m *matcher) MatchGroups(value string) map[string]string {
 		}
 		groups[name] = match[i]
 	}
-	return groups
+	return groups, true
+}
+
+// String returns a string representation of this Matcher's RegExp
+func (m *matcher) String() string {
+	return m.matcher.String()
 }

@@ -11,25 +11,25 @@ import (
 )
 
 func TestRenderer_NamedRender_Empty(t *testing.T) {
-	Run(t, TestCase{
+	Run(t, Test{
 		name: "empty render",
-		f: func(tc TestCase) {
+		f: func(tt Test) {
 			input := ""
 			expected := ""
 
-			result, err := New().NamedRender(tc.name, input)
+			result, err := New().NamedRender(tt.name, input)
 
-			assert.NoError(t, err, tc.name)
-			assert.Equal(t, expected, result, tc.name)
-			assert.Equal(t, 0, len(tc.logHook.Entries))
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 0, CountProblems(tt.logHook))
 		},
 	})
 }
 
 func TestRenderer_NamedRender_Simple(t *testing.T) {
-	Run(t, TestCase{
+	Run(t, Test{
 		name: "simple render",
-		f: func(tc TestCase) {
+		f: func(tt Test) {
 			input := `key: {{ .value }}
 something:
   nested: {{ .something.nested }}`
@@ -55,37 +55,39 @@ something:
 				t.Fatal(err)
 			}
 
-			result, err := New().Parameters(params).NamedRender(tc.name, input)
+			result, err := New().Parameters(params).NamedRender(tt.name, input)
 
-			assert.NoError(t, err, tc.name)
-			assert.Equal(t, expected, result, tc.name)
-			assert.Equal(t, 3, len(tc.logHook.Entries))
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 3, len(tt.logHook.Entries))
+			assert.Equal(t, 0, CountProblems(tt.logHook))
 		},
 	})
 }
 
 func TestRenderer_Render_Error(t *testing.T) {
-	Run(t, TestCase{
+	Run(t, Test{
 		name: "parse error",
-		f: func(tc TestCase) {
+		f: func(tt Test) {
 			input := "{{ wrong+ }}"
 			expected := ""
 
-			result, err := New().NamedRender(tc.name, input)
+			result, err := New().NamedRender(tt.name, input)
 
-			assert.Error(t, err, tc.name)
-			assert.Equal(t, expected, result, tc.name)
-			assert.Equal(t, 1, len(tc.logHook.Entries))
-			assert.Equal(t, logrus.ErrorLevel, tc.logHook.LastEntry().Level)
-			assert.Contains(t, tc.logHook.LastEntry().Message, "Can't parse the template")
+			assert.Error(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 1, len(tt.logHook.Entries))
+			assert.Equal(t, logrus.ErrorLevel, tt.logHook.LastEntry().Level)
+			assert.Contains(t, tt.logHook.LastEntry().Message, "Can't parse the template")
+			assert.Equal(t, 1, CountProblems(tt.logHook))
 		},
 	})
 }
 
 func TestRenderer_NamedRender_Render(t *testing.T) {
-	Run(t, TestCase{
+	Run(t, Test{
 		name: "render render",
-		f: func(tc TestCase) {
+		f: func(tt Test) {
 			input := "key: {{ .inner | render }}"
 			expected := "key: some"
 			params := parameters.Parameters{
@@ -93,36 +95,38 @@ func TestRenderer_NamedRender_Render(t *testing.T) {
 				"value": "some",
 			}
 
-			result, err := New().Parameters(params).NamedRender(tc.name, input)
+			result, err := New().Parameters(params).NamedRender(tt.name, input)
 
-			assert.NoError(t, err, tc.name)
-			assert.Equal(t, expected, result, tc.name)
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 0, CountProblems(tt.logHook))
 		},
 	})
 }
 
 func TestRenderer_NamedRender_Func(t *testing.T) {
-	Run(t, TestCase{
+	Run(t, Test{
 		name: "parse func",
-		f: func(tc TestCase) {
+		f: func(tt Test) {
 			input := "key: {{ b64enc .value }}"
 			expected := "key: c29tZQ=="
 			params := parameters.Parameters{
 				"value": "some",
 			}
 
-			result, err := New().Parameters(params).NamedRender(tc.name, input)
+			result, err := New().Parameters(params).NamedRender(tt.name, input)
 
-			assert.NoError(t, err, tc.name)
-			assert.Equal(t, expected, result, tc.name)
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 0, CountProblems(tt.logHook))
 		},
 	})
 }
 
 func TestRenderer_Render_Pipe(t *testing.T) {
-	Run(t, TestCase{
+	Run(t, Test{
 		name: "parse func",
-		f: func(tc TestCase) {
+		f: func(tt Test) {
 			input := "{{ .key }}: {{ b64enc .value | b64dec }}"
 			expected := "awe: some"
 			params := parameters.Parameters{
@@ -130,34 +134,57 @@ func TestRenderer_Render_Pipe(t *testing.T) {
 				"value": "some",
 			}
 
-			result, err := New().Parameters(params).NamedRender(tc.name, input)
+			result, err := New().Parameters(params).NamedRender(tt.name, input)
 
-			assert.NoError(t, err, tc.name)
-			assert.Equal(t, expected, result, tc.name)
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 0, CountProblems(tt.logHook))
 		},
 	})
 }
 
 func TestRenderer_Render_Validate_Default(t *testing.T) {
-	Run(t, TestCase{
+	Run(t, Test{
 		name: "validation",
-		f: func(tc TestCase) {
+		f: func(tt Test) {
 			err := New().Validate()
-			assert.NoError(t, err, tc.name)
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, 0, CountProblems(tt.logHook))
 		},
 	})
 }
 
-type TestCase struct {
+type Test struct {
 	name    string
-	f       func(tc TestCase)
+	f       func(tt Test)
 	logHook *test.Hook
 }
 
-func Run(t *testing.T, c TestCase) {
+func Run(t *testing.T, tt Test) {
 	logrus.SetLevel(logrus.DebugLevel)
 	hook := test.NewGlobal()
-	c.logHook = hook
-	t.Run(c.name, func(t *testing.T) { c.f(c) })
+	tt.logHook = hook
+	t.Run(tt.name, func(t *testing.T) { tt.f(tt) })
 	hook.Reset()
+}
+
+func FilterEntries(filterOut []logrus.Level, entries []*logrus.Entry) []*logrus.Entry {
+	var errors []*logrus.Entry
+	for _, entry := range entries {
+		skip := false
+		for _, level := range filterOut {
+			if entry.Level == level {
+				skip = true
+			}
+		}
+		if !skip {
+			logrus.Debugf("Log: %+v", *entry)
+			errors = append(errors, entry)
+		}
+	}
+	return errors
+}
+
+func CountProblems(hook *test.Hook) int {
+	return len(FilterEntries([]logrus.Level{logrus.InfoLevel, logrus.DebugLevel, logrus.TraceLevel}, hook.AllEntries()))
 }

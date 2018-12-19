@@ -112,25 +112,24 @@ func FromFiles(configPaths []string) (Parameters, error) {
 func FromVars(extraParams []string) (Parameters, error) {
 	var config = &Parameters{}
 	for _, v := range extraParams {
-		if VarArgRegexp.Match(v) {
-			groups := VarArgRegexp.MatchGroups(v)
-			name := groups["name"]
-			value := groups["value"]
-			logrus.Debugf("Extra var: %s=%s", name, value)
-			isNested := strings.Contains(name, ".")
-			if isNested {
-				logrus.Debugf("Extra var key is nested: %s", name)
-				var err error
-				config, err = appendNested(config, name, value)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				(*config)[name] = value
-			}
-		} else {
+		groups, ok := VarArgRegexp.MatchGroups(v)
+		if !ok {
 			logrus.Errorf("Expected a valid extra parameter: '%s'", v)
 			return nil, errors.Errorf("invalid parameter: '%s'", v)
+		}
+		name := groups["name"]
+		value := groups["value"]
+		logrus.Debugf("Extra var: %s=%s", name, value)
+		isNested := strings.Contains(name, ".")
+		if isNested {
+			logrus.Debugf("Extra var key is nested: %s", name)
+			var err error
+			config, err = appendNested(config, name, value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			(*config)[name] = value
 		}
 	}
 
