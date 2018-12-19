@@ -3,31 +3,63 @@ package renderer
 import (
 	"testing"
 
-	"github.com/VirtusLab/render/renderer/configuration"
+	"github.com/VirtusLab/render/renderer/parameters"
+
 	"github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/stretchr/testify/assert"
 )
 
-type TestCase struct {
-	name    string
-	f       func(tc TestCase)
-	logHook *test.Hook
-}
-
-func TestRenderer_Render_Empty(t *testing.T) {
+func TestRenderer_NamedRender_Empty(t *testing.T) {
 	Run(t, TestCase{
 		name: "empty render",
 		f: func(tc TestCase) {
 			input := ""
 			expected := ""
-			config := configuration.Configuration{}
 
-			result, err := New(config).Render(tc.name, input)
+			result, err := New().NamedRender(tc.name, input)
 
 			assert.NoError(t, err, tc.name)
 			assert.Equal(t, expected, result, tc.name)
 			assert.Equal(t, 0, len(tc.logHook.Entries))
+		},
+	})
+}
+
+func TestRenderer_NamedRender_Simple(t *testing.T) {
+	Run(t, TestCase{
+		name: "simple render",
+		f: func(tc TestCase) {
+			input := `key: {{ .value }}
+something:
+  nested: {{ .something.nested }}`
+
+			expected := `key: some
+something:
+  nested: val`
+
+			fromVars, err := parameters.FromVars([]string{
+				"something.nested=val",
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			params, err := parameters.Merge(
+				parameters.Parameters{
+					"value": "some",
+				},
+				fromVars,
+			)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			result, err := New().Parameters(params).NamedRender(tc.name, input)
+
+			assert.NoError(t, err, tc.name)
+			assert.Equal(t, expected, result, tc.name)
+			assert.Equal(t, 3, len(tc.logHook.Entries))
 		},
 	})
 }
@@ -38,9 +70,8 @@ func TestRenderer_Render_Error(t *testing.T) {
 		f: func(tc TestCase) {
 			input := "{{ wrong+ }}"
 			expected := ""
-			config := configuration.Configuration{}
 
-			result, err := New(config).Render(tc.name, input)
+			result, err := New().NamedRender(tc.name, input)
 
 			assert.Error(t, err, tc.name)
 			assert.Equal(t, expected, result, tc.name)
@@ -51,18 +82,18 @@ func TestRenderer_Render_Error(t *testing.T) {
 	})
 }
 
-func TestRenderer_Render_Render(t *testing.T) {
+func TestRenderer_NamedRender_Render(t *testing.T) {
 	Run(t, TestCase{
 		name: "render render",
 		f: func(tc TestCase) {
 			input := "key: {{ .inner | render }}"
 			expected := "key: some"
-			config := configuration.Configuration{
+			params := parameters.Parameters{
 				"inner": "{{ .value }}",
 				"value": "some",
 			}
 
-			result, err := New(config).Render(tc.name, input)
+			result, err := New().Parameters(params).NamedRender(tc.name, input)
 
 			assert.NoError(t, err, tc.name)
 			assert.Equal(t, expected, result, tc.name)
@@ -70,17 +101,17 @@ func TestRenderer_Render_Render(t *testing.T) {
 	})
 }
 
-func TestRenderer_Render_Func(t *testing.T) {
+func TestRenderer_NamedRender_Func(t *testing.T) {
 	Run(t, TestCase{
 		name: "parse func",
 		f: func(tc TestCase) {
 			input := "key: {{ b64enc .value }}"
 			expected := "key: c29tZQ=="
-			config := configuration.Configuration{
+			params := parameters.Parameters{
 				"value": "some",
 			}
 
-			result, err := New(config).Render(tc.name, input)
+			result, err := New().Parameters(params).NamedRender(tc.name, input)
 
 			assert.NoError(t, err, tc.name)
 			assert.Equal(t, expected, result, tc.name)
@@ -94,12 +125,12 @@ func TestRenderer_Render_Pipe(t *testing.T) {
 		f: func(tc TestCase) {
 			input := "{{ .key }}: {{ b64enc .value | b64dec }}"
 			expected := "awe: some"
-			config := configuration.Configuration{
+			params := parameters.Parameters{
 				"key":   "awe",
 				"value": "some",
 			}
 
-			result, err := New(config).Render(tc.name, input)
+			result, err := New().Parameters(params).NamedRender(tc.name, input)
 
 			assert.NoError(t, err, tc.name)
 			assert.Equal(t, expected, result, tc.name)
@@ -107,39 +138,21 @@ func TestRenderer_Render_Pipe(t *testing.T) {
 	})
 }
 
-func TestRenderer_Render_Validate_Defualt(t *testing.T) {
+func TestRenderer_Render_Validate_Default(t *testing.T) {
 	Run(t, TestCase{
 		name: "validation",
 		f: func(tc TestCase) {
-			config := configuration.Configuration{}
-			err := New(config).Validate()
+			err := New().Validate()
 			assert.NoError(t, err, tc.name)
 		},
 	})
 }
 
-//func TestRenderer_Render_EmbedDecrypt(t *testing.T) {
-//	Run(t, TestCase{
-//		name: "parse nested",
-//		f: func(tc TestCase) {
-//			input := `/* multi-line test file */
-//{{ .key }}: {{ embedDecrypt .value }}`
-//
-//			expected := `/* multi-line test file */
-//awe: {{ decrypt "some" }}`
-//
-//			config := configuration.Configuration{
-//				"key":   "awe",
-//				"value": "some",
-//			}
-//
-//			result, err := New(config).Render(tc.name, input)
-//
-//			assert.NoError(t, err, tc.name)
-//			assert.Equal(t, expected, result, tc.name)
-//		},
-//	})
-//}
+type TestCase struct {
+	name    string
+	f       func(tc TestCase)
+	logHook *test.Hook
+}
 
 func Run(t *testing.T, c TestCase) {
 	logrus.SetLevel(logrus.DebugLevel)

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Masterminds/sprig"
 	"github.com/VirtusLab/render/files"
-	"github.com/VirtusLab/render/renderer/configuration"
+
+	"github.com/Masterminds/sprig"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -24,22 +24,26 @@ const (
 	RightDelim = "}}"
 )
 
-// Renderer structure holds configuration and options
+// Renderer structure holds parameters and options
 type Renderer struct {
-	configuration configuration.Configuration
-	options       []string
-	leftDelim     string
-	rightDelim    string
+	parameters     map[string]interface{}
+	options        []string
+	leftDelim      string
+	rightDelim     string
+	extraFunctions template.FuncMap
 }
 
-// New creates a new renderer with the specified configuration and zero or more options
-func New(configuration configuration.Configuration, opts ...string) *Renderer {
-	return &Renderer{
-		configuration: configuration,
-		options:       opts,
-		leftDelim:     LeftDelim,
-		rightDelim:    RightDelim,
+// New creates a new renderer with the specified parameters and zero or more options
+func New() *Renderer {
+	r := &Renderer{
+		parameters:     map[string]interface{}{},
+		options:        []string{MissingKeyErrorOption},
+		leftDelim:      LeftDelim,
+		rightDelim:     RightDelim,
+		extraFunctions: template.FuncMap{},
 	}
+	r.Functions(r.ExtraFunctions())
+	return r
 }
 
 // Delim mutates Renderer with new left and right delimiters
@@ -49,10 +53,28 @@ func (r *Renderer) Delim(left, right string) *Renderer {
 	return r
 }
 
-// SimpleRender is a simple rendering function, also used as a custom template function
-// to allow in-template recursive rendering, see also Render, RenderWith
-func (r *Renderer) SimpleRender(rawTemplate string) (string, error) {
-	return r.Render("nameless", rawTemplate)
+// Functions mutates Renderer with new template functions
+func (r *Renderer) Functions(extraFunctions template.FuncMap) *Renderer {
+	r.extraFunctions = extraFunctions
+	return r
+}
+
+// Options mutates Renderer with new template functions
+func (r *Renderer) Options(options ...string) *Renderer {
+	r.options = options
+	return r
+}
+
+// Parameters mutates Renderer with new template parameters
+func (r *Renderer) Parameters(parameters map[string]interface{}) *Renderer {
+	r.parameters = parameters
+	return r
+}
+
+// Render is a simple rendering function, also used as a custom template function
+// to allow in-template recursive rendering, see also NamedRender
+func (r *Renderer) Render(rawTemplate string) (string, error) {
+	return r.NamedRender("nameless", rawTemplate)
 }
 
 // TODO DirRender
@@ -72,7 +94,7 @@ func (r *Renderer) FileRender(inputPath, outputPath string) error {
 		templateName = inputPath
 	}
 
-	result, err := r.Render(templateName, string(input))
+	result, err := r.NamedRender(templateName, string(input))
 	if err != nil {
 		return err
 	}
@@ -86,14 +108,14 @@ func (r *Renderer) FileRender(inputPath, outputPath string) error {
 	return nil
 }
 
-// Render is the main rendering function, see also SimpleRender, Configuration and ExtraFunctions
-func (r *Renderer) Render(templateName, rawTemplate string) (string, error) {
+// NamedRender is the main rendering function, see also Render, Parameters and ExtraFunctions
+func (r *Renderer) NamedRender(templateName, rawTemplate string) (string, error) {
 	err := r.Validate()
 	if err != nil {
 		logrus.Errorf("Invalid state; %v", err)
 		return "", err
 	}
-	t, err := r.Parse(templateName, rawTemplate, r.ExtraFunctions())
+	t, err := r.Parse(templateName, rawTemplate, r.extraFunctions)
 	if err != nil {
 		logrus.Errorf("Can't parse the template; %v", err)
 		return "", err
@@ -108,13 +130,8 @@ func (r *Renderer) Render(templateName, rawTemplate string) (string, error) {
 
 // Validate checks the internal state and returns error if necessary
 func (r *Renderer) Validate() error {
-	if r.configuration != nil {
-		err := r.configuration.Validate()
-		if err != nil {
-			return err
-		}
-	} else {
-		return errors.New("unexpected 'nil' configuration")
+	if r.parameters == nil {
+		return errors.New("unexpected 'nil' parameters")
 	}
 
 	if len(r.leftDelim) == 0 {
@@ -148,7 +165,7 @@ func (r *Renderer) Parse(templateName, rawTemplate string, extraFunctions templa
 // Execute is a basic template execution function
 func (r *Renderer) Execute(t *template.Template) (string, error) {
 	var buffer bytes.Buffer
-	err := t.Execute(&buffer, r.configuration)
+	err := t.Execute(&buffer, r.parameters)
 	if err != nil {
 		retErr := err
 		logrus.Debugf("(%v): %v", reflect.TypeOf(err), err)
@@ -183,7 +200,7 @@ it adds sprig functions and custom functions:
 */
 func (r *Renderer) ExtraFunctions() template.FuncMap {
 	extraFunctions := sprig.TxtFuncMap()
-	extraFunctions["render"] = r.SimpleRender
+	extraFunctions["render"] = r.Render
 	extraFunctions["readFile"] = r.ReadFile
 	extraFunctions["toYaml"] = ToYaml
 	extraFunctions["ungzip"] = Ungzip

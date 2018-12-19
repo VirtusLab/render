@@ -7,8 +7,9 @@ import (
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer"
-	"github.com/VirtusLab/render/renderer/configuration"
+	"github.com/VirtusLab/render/renderer/parameters"
 	"github.com/VirtusLab/render/version"
+
 	"github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -115,12 +116,12 @@ func preload(c *cli.Context) error {
 }
 
 func action(_ *cli.Context) error {
-	config, err := configuration.All(configPaths, vars)
+	params, err := parameters.All(configPaths, vars)
 	if err != nil {
 		return err
 	}
 
-	r := renderer.New(config, renderer.MissingKeyErrorOption)
+	r := renderer.New().Options(renderer.MissingKeyErrorOption).Parameters(params)
 	err = r.FileRender(inputPath, outputPath)
 	if err != nil {
 		if err == files.ErrExpectedStdin {

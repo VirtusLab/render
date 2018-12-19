@@ -102,13 +102,11 @@ package example
 
 import (
     "github.com/VirtusLab/render/renderer"
-    "github.com/VirtusLab/render/renderer/configuration"
+    "github.com/VirtusLab/render/renderer/parameters"
 )
 
-func CustomRender(template string) (string, error) {
-    config := configuration.Configuration{}
-    r := renderer.New(config, renderer.MissingKeyErrorOption)
-    return r.Render("nameless", template)
+func CustomRender(template string, params parameters.Parameters) (string, error) {
+    return renderer.New().Parameters(params).Render(template)
 }
 ```
 

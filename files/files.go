@@ -33,7 +33,7 @@ func ReadInput(inputPath string) ([]byte, error) {
 			logrus.Debugf("Cannot open file: '%s'; %v", inputPath, err)
 			return nil, err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		inputFile = f
 	}
 	fileContent, err := ioutil.ReadAll(inputFile)
@@ -71,18 +71,18 @@ func WriteOutput(outputPath string, outputContent []byte, perm os.FileMode) erro
 // IsNotEmptyAndExists checks the given file exists and is not empty
 func IsNotEmptyAndExists(file string) bool {
 	if len(file) == 0 {
-		logrus.Infof("Configuration file path is empty")
+		logrus.Infof("File path is empty")
 		return false
 	}
 
 	fileInfo, err := os.Stat(file)
 	if err != nil {
-		logrus.Infof("Configuration file path does not exist")
+		logrus.Infof("File path does not exist")
 		return false
 	}
 
 	if fileInfo.Size() == 0 {
-		logrus.Infof("Configuration file is empty")
+		logrus.Infof("File is empty")
 		return false
 	}
 

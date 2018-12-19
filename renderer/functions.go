@@ -11,13 +11,14 @@ import (
 	"github.com/VirtusLab/crypt/azure"
 	"github.com/VirtusLab/crypt/gcp"
 	"github.com/VirtusLab/render/files"
-	"github.com/VirtusLab/render/renderer/configuration"
+	"github.com/VirtusLab/render/renderer/parameters"
+
 	"github.com/ghodss/yaml"
 	"github.com/pkg/errors"
 )
 
 func (r *Renderer) root() (string, error) {
-	if value, ok := r.configuration[configuration.RootKey].(string); ok {
+	if value, ok := r.parameters[parameters.RootKey].(string); ok {
 		return value, nil
 	}
 	return files.Pwd()
@@ -56,7 +57,7 @@ func Gzip(input interface{}) (string, error) {
 
 	var b bytes.Buffer
 	w := gzip.NewWriter(&b)
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 
 	_, err = w.Write(inputAsBytes)
 	if err != nil {
