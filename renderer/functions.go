@@ -17,15 +17,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (r *Renderer) root() (string, error) {
-	if value, ok := r.parameters[parameters.RootKey].(string); ok {
+func (r *renderer) root() (string, error) {
+	params := r.Configuration().Parameters
+	if value, ok := params[parameters.RootKey].(string); ok {
 		return value, nil
 	}
 	return files.Pwd()
 }
 
 // ReadFile is a template function that allows for an in-template file opening
-func (r *Renderer) ReadFile(file string) (string, error) {
+func (r *renderer) ReadFile(file string) (string, error) {
 	root, err := r.root()
 	if err != nil {
 		return "", err
@@ -84,7 +85,7 @@ func Ungzip(input interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	var out bytes.Buffer
 	_, err = io.Copy(&out, r)

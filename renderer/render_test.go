@@ -1,6 +1,7 @@
 package renderer
 
 import (
+	"github.com/Masterminds/sprig"
 	"testing"
 
 	"github.com/VirtusLab/render/renderer/parameters"
@@ -55,7 +56,7 @@ something:
 				t.Fatal(err)
 			}
 
-			result, err := New().Parameters(params).NamedRender(tt.name, input)
+			result, err := New(WithParameters(params)).NamedRender(tt.name, input)
 
 			assert.NoError(t, err, tt.name)
 			assert.Equal(t, expected, result, tt.name)
@@ -76,10 +77,6 @@ func TestRenderer_Render_Error(t *testing.T) {
 
 			assert.Error(t, err, tt.name)
 			assert.Equal(t, expected, result, tt.name)
-			assert.Equal(t, 1, len(tt.logHook.Entries))
-			assert.Equal(t, logrus.ErrorLevel, tt.logHook.LastEntry().Level)
-			assert.Contains(t, tt.logHook.LastEntry().Message, "Can't parse the template")
-			assert.Equal(t, 1, CountProblems(tt.logHook))
 		},
 	})
 }
@@ -95,7 +92,7 @@ func TestRenderer_NamedRender_Render(t *testing.T) {
 				"value": "some",
 			}
 
-			result, err := New().Parameters(params).NamedRender(tt.name, input)
+			result, err := New(WithParameters(params)).NamedRender(tt.name, input)
 
 			assert.NoError(t, err, tt.name)
 			assert.Equal(t, expected, result, tt.name)
@@ -114,7 +111,10 @@ func TestRenderer_NamedRender_Func(t *testing.T) {
 				"value": "some",
 			}
 
-			result, err := New().Parameters(params).NamedRender(tt.name, input)
+			result, err := New(
+				WithParameters(params),
+				WithMoreFunctions(sprig.TxtFuncMap()),
+			).NamedRender(tt.name, input)
 
 			assert.NoError(t, err, tt.name)
 			assert.Equal(t, expected, result, tt.name)
@@ -134,7 +134,10 @@ func TestRenderer_Render_Pipe(t *testing.T) {
 				"value": "some",
 			}
 
-			result, err := New().Parameters(params).NamedRender(tt.name, input)
+			result, err := New(
+				WithParameters(params),
+				WithMoreFunctions(sprig.TxtFuncMap()),
+			).NamedRender(tt.name, input)
 
 			assert.NoError(t, err, tt.name)
 			assert.Equal(t, expected, result, tt.name)
