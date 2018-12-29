@@ -10,9 +10,9 @@ import (
 	"github.com/VirtusLab/crypt/aws"
 	"github.com/VirtusLab/crypt/azure"
 	"github.com/VirtusLab/crypt/gcp"
-	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer/parameters"
 
+	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/ghodss/yaml"
 	"github.com/pkg/errors"
 )

@@ -14,7 +14,8 @@ import (
 	"time"
 
 	"github.com/VirtusLab/render/constants"
-	"github.com/VirtusLab/render/files"
+
+	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -160,20 +161,18 @@ func TestNoArgs(t *testing.T) {
 
 func TestEmpty(t *testing.T) {
 	stdin := ""
-	stdout, stderr, err := runStdin(&stdin)
+	stdout, _, err := runStdin(&stdin)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "", stdout)
-	assert.Contains(t, stderr, "using piped stdin")
 }
 
 func TestSimple(t *testing.T) {
 	stdin := "test-{{ .something }}-test"
-	stdout, stderr, err := runStdin(&stdin, "--var=something=test")
+	stdout, _, err := runStdin(&stdin, "--var=something=test")
 
 	assert.NoError(t, err)
 	assert.Equal(t, "test-test-test", stdout)
-	assert.Contains(t, stderr, "using piped stdin")
 }
 
 func TestMissingKeyError(t *testing.T) {

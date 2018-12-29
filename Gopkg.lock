@@ -79,6 +79,17 @@
   version = "v0.0.4"
 
 [[projects]]
+  digest = "1:a12555583c39cbf0e8cd0f937619c653286d8cbd4fc78883ac12185d7bb4807d"
+  name = "github.com/VirtusLab/go-extended"
+  packages = [
+    "pkg/files",
+    "pkg/matcher",
+  ]
+  pruneopts = "UT"
+  revision = "3516716445b12284d7e0dc8c666c92a982cae494"
+  version = "v0.0.1"
+
+[[projects]]
   digest = "1:8f5416c7f59da8600725ae1ff00a99af1da8b04c211ae6f3c8f8bcab0164f650"
   name = "github.com/aokoli/goutils"
   packages = ["."]
@@ -479,6 +490,8 @@
     "github.com/VirtusLab/crypt/aws",
     "github.com/VirtusLab/crypt/azure",
     "github.com/VirtusLab/crypt/gcp",
+    "github.com/VirtusLab/go-extended/pkg/files",
+    "github.com/VirtusLab/go-extended/pkg/matcher",
     "github.com/ghodss/yaml",
     "github.com/imdario/mergo",
     "github.com/pkg/errors",

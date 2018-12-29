@@ -24,6 +24,7 @@ about Kubernetes resources rendering. Also see [Helm compatibility](README.md#he
   * [Custom functions](README.md#custom-functions)
   * [Helm compatibility](README.md#helm-compatibility)
   * [Limitations and future work](README.md#limitations-and-future-work)
+* [Contribution](README.md#contribution)
 * [Development](README.md#development)
 * [The Name](README.md#the-name)
 
@@ -159,7 +160,8 @@ We provide cross-compiled binaries for most platforms, but is currently used mai
 
 ## Contribution
 
-Feel free to file [issues](https://github.com/VirtusLab/render/issues) or [pull requests](https://github.com/VirtusLab/render/pulls).
+Feel free to file [issues](https://github.com/VirtusLab/render/issues) 
+or [pull requests](https://github.com/VirtusLab/render/pulls).
 
 ## Development
 

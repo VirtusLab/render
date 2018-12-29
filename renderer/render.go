@@ -6,9 +6,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/VirtusLab/render/files"
-
 	"github.com/Masterminds/sprig"
+	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

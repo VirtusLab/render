@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/VirtusLab/render/files"
-	"github.com/VirtusLab/render/matcher"
+	"github.com/VirtusLab/go-extended/pkg/files"
+	"github.com/VirtusLab/go-extended/pkg/matcher"
 
 	"github.com/ghodss/yaml"
 	"github.com/imdario/mergo"
@@ -85,22 +85,25 @@ func FromFiles(configPaths []string) (Parameters, error) {
 	var accumulator = make(Parameters)
 	for i, configPath := range configPaths {
 		logrus.Debugf("Reading configuration file [%d]: %v", i, configPath)
-		if files.IsNotEmptyAndExists(configPath) {
-			b, err := ioutil.ReadFile(configPath)
-			if err != nil {
-				logrus.Errorf("Can't open the configuration file: %v", err)
-				return nil, errors.WithStack(err)
-			}
-			var config map[string]interface{}
-			err = yaml.Unmarshal(b, &config)
-			if err != nil {
-				logrus.Errorf("Can't parse the configuration file: %v", err)
-				return nil, errors.WithStack(err)
-			}
-			err = merge(&accumulator, config)
-			if err != nil {
-				return nil, err
-			}
+		err := files.CheckNotEmptyAndExists(configPath)
+		if err != nil {
+			logrus.Errorf("Can't find the configuration file '%s': %v", configPath, err)
+			return nil, errors.WithStack(err)
+		}
+		b, err := ioutil.ReadFile(configPath)
+		if err != nil {
+			logrus.Errorf("Can't open the configuration file '%s': %v", configPath, err)
+			return nil, errors.WithStack(err)
+		}
+		var config map[string]interface{}
+		err = yaml.Unmarshal(b, &config)
+		if err != nil {
+			logrus.Errorf("Can't parse the configuration file '%s': %v", configPath, err)
+			return nil, errors.WithStack(err)
+		}
+		err = merge(&accumulator, config)
+		if err != nil {
+			return nil, err
 		}
 	}
 	logrus.Debugf("Parameters from files: %v", accumulator)

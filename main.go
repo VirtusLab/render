@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/VirtusLab/render/constants"
-	"github.com/VirtusLab/render/files"
 	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/renderer/parameters"
 	"github.com/VirtusLab/render/version"
 
+	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 )
