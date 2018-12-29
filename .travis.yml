@@ -3,17 +3,19 @@ sudo: false
 
 go:
 - 1.11.x
-- tip
+- master
 
 matrix:
   fast_finish: true
   allow_failures:
-  - go: tip
+  - go: master
 
 before_install:
 - go get golang.org/x/lint/golint
 - go get honnef.co/go/tools/cmd/staticcheck
 - go get -u golang.org/x/tools/cmd/goimports
+- go get -u github.com/golang/dep/cmd/dep
+- make dep
 
 script:
 - make verify
@@ -61,3 +63,7 @@ deploy:
   - cross/render-windows-386
   - cross/render-windows-386.md5
   - cross/render-windows-386.sha256
+
+cache:
+  directories:
+    - vendor
