@@ -4,6 +4,7 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
+	"github.com/VirtusLab/crypt/crypto"
 	"github.com/VirtusLab/go-extended/pkg/files"
 	base "github.com/VirtusLab/go-extended/pkg/renderer"
 	"github.com/VirtusLab/go-extended/pkg/renderer/config"
@@ -79,6 +80,11 @@ func WithSprigFunctions() func(*config.Config) {
 	return WithMoreFunctions(sprig.TxtFuncMap())
 }
 
+// WithCryptFunctions mutates Renderer configuration with the Crypt template functions
+func WithCryptFunctions() func(*config.Config) {
+	return WithMoreFunctions(crypto.TemplateFunctions())
+}
+
 // MergeFunctions merges two template.FuncMap instances, overrides if necessary
 func MergeFunctions(dst *template.FuncMap, src template.FuncMap) error {
 	err := mergo.Merge(dst, src, mergo.WithOverride)
@@ -125,24 +131,12 @@ ExtraFunctions provides additional template functions to the standard (text/temp
   - toYaml - provides a configuration data structure fragment as a YAML format
   - gzip - use gzip compression inside the templates, for best results use with b64enc
   - ungzip - use gzip extraction inside the templates, for best results use with b64dec
-  - encryptAWS - encrypts the data from inside of the template using AWS KMS, for best results use with gzip and b64enc
-  - decryptAWS - decrypts the data from inside of the template using AWS KMS, for best results use with ungzip and b64dec
-  - encryptGCP - encrypts the data from inside of the template using GCP KMS, for best results use with gzip and b64enc
-  - decryptGCP - decrypts the data from inside of the template using GCP KMS, for best results use with ungzip and b64dec
-  - encryptAzure - encrypts the data from inside of the template using Azure Key Vault, for best results use with gzip and b64enc
-  - decryptAzure - decrypts the data from inside of the template using Azure Key Vault, for best results use with ungzip and b64dec
 
 */
 func ExtraFunctions() template.FuncMap {
 	return template.FuncMap{
-		"toYaml":       ToYaml,
-		"ungzip":       Ungzip,
-		"gzip":         Gzip,
-		"encryptAWS":   EncryptAWS,
-		"decryptAWS":   DecryptAWS,
-		"encryptGCP":   EncryptGCP,
-		"decryptGCP":   DecryptGCP,
-		"encryptAzure": EncryptAzure,
-		"decryptAzure": DecryptAzure,
+		"toYaml": ToYaml,
+		"ungzip": Ungzip,
+		"gzip":   Gzip,
 	}
 }

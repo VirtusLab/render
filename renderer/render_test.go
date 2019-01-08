@@ -1,11 +1,11 @@
 package renderer
 
 import (
-	"github.com/Masterminds/sprig"
 	"testing"
 
 	"github.com/VirtusLab/render/renderer/parameters"
 
+	"github.com/Masterminds/sprig"
 	"github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/stretchr/testify/assert"

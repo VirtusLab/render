@@ -125,6 +125,7 @@ func action(_ *cli.Context) error {
 		renderer.WithParameters(params),
 		renderer.WithSprigFunctions(),
 		renderer.WithExtraFunctions(),
+		renderer.WithCryptFunctions(),
 	)
 	err = r.FileRender(inputPath, outputPath)
 	if err != nil {
