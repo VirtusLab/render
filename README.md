@@ -107,7 +107,11 @@ import (
 )
 
 func CustomRender(template string, params parameters.Parameters) (string, error) {
-    return renderer.New().Parameters(params).Render(template)
+    return renderer.New(
+        renderer.WithParameters(params),
+        renderer.WithSprigFunctions(),
+		renderer.WithExtraFunctions(),
+    ).Render(template)
 }
 ```
 
@@ -171,6 +175,7 @@ or [pull requests](https://github.com/VirtusLab/render/pulls).
     mkdir -p $GOPATH/src/github.com/VirtusLab
     cd $GOPATH/src/github.com/VirtusLab/render
     git clone git@github.com:VirtusLab/render.git
+    cd render
     
     go get -u github.com/golang/dep/cmd/dep
     make all
