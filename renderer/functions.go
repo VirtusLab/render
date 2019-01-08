@@ -93,11 +93,11 @@ func Ungzip(input interface{}) (string, error) {
 }
 
 func asBytes(input interface{}) ([]byte, error) {
-	switch input.(type) {
+	switch input := input.(type) {
 	case []byte:
-		return input.([]byte), nil
+		return input, nil
 	case string:
-		return []byte(input.(string)), nil
+		return []byte(input), nil
 	default:
 		return nil, errors.Errorf("expected []byte or string, got: '%v'", reflect.TypeOf(input))
 	}
