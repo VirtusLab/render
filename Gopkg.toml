@@ -40,8 +40,8 @@
 
 [[constraint]]
   name = "github.com/VirtusLab/crypt"
-  branch = "master"
+  version = "v0.0.5"
 
 [[constraint]]
   name = "github.com/VirtusLab/go-extended"
-  branch = "master"
+  version = "v0.0.2"
