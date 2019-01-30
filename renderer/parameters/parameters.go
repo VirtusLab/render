@@ -21,7 +21,7 @@ const (
 
 var (
 	// VarArgRegexp defines the extra variable parameter format
-	VarArgRegexp = matcher.Must(`^(?P<name>\S+)=(?P<value>\S*)$`)
+	VarArgRegexp = matcher.Must(`^(?P<name>\S+)=(?P<value>[\S ]*)$`)
 )
 
 // Parameters is a map used to render the templates with
@@ -56,7 +56,7 @@ func All(configPaths, vars []string) (Parameters, error) {
 
 	filesConfig, err := FromFiles(configPaths)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't parse configuration filse")
+		return nil, errors.Wrap(err, "can't parse configuration files")
 	}
 
 	varsConfig, err := FromVars(vars)
@@ -121,7 +121,7 @@ func FromVars(extraParams []string) (Parameters, error) {
 			return nil, errors.Errorf("invalid parameter: '%s'", v)
 		}
 		name := groups["name"]
-		value := groups["value"]
+		value := strings.Trim(groups["value"], `"'`)
 		logrus.Debugf("Extra var: %s=%s", name, value)
 		isNested := strings.Contains(name, ".")
 		if isNested {

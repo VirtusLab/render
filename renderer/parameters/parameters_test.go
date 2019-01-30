@@ -175,7 +175,17 @@ func TestWithVars(t *testing.T) {
 			want:    Parameters{},
 			wantErr: nil,
 			f:       standard,
-		}, {
+		},
+		{
+			name: "empty value",
+			args: args{extraParams: []string{"key="}},
+			want: Parameters{
+				"key": "",
+			},
+			wantErr: nil,
+			f:       standard,
+		},
+		{
 			name: "simple",
 			args: args{extraParams: []string{"key=value"}},
 			want: Parameters{
@@ -183,7 +193,8 @@ func TestWithVars(t *testing.T) {
 			},
 			wantErr: nil,
 			f:       standard,
-		}, {
+		},
+		{
 			name: "two",
 			args: args{extraParams: []string{"key=value", "another=pair"}},
 			want: Parameters{
@@ -192,7 +203,8 @@ func TestWithVars(t *testing.T) {
 			},
 			wantErr: nil,
 			f:       standard,
-		}, {
+		},
+		{
 			name: "nested",
 			args: args{extraParams: []string{"key.nested=value"}},
 			want: Parameters{
@@ -210,6 +222,23 @@ func TestWithVars(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("[%d] %s", i, tt.name), func(t *testing.T) { tt.f(tt) })
 	}
+
+	t.Run("with spaces", func(t *testing.T) {
+		vars := []string{
+			`first="a value"`,
+			"second.nested='yet another value'",
+		}
+		want := Parameters{
+			"first": "a value",
+			"second": Parameters{
+				"nested": "yet another value",
+			},
+		}
+
+		got, err := FromVars(vars)
+		assert.NoError(t, err)
+		assert.EqualValues(t, want, got)
+	})
 }
 
 func TestAppendNested(t *testing.T) {

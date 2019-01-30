@@ -184,3 +184,15 @@ func TestMissingKeyError(t *testing.T) {
 	assert.Contains(t, stderr, "stdin:1:3")
 	assert.Contains(t, stderr, "map has no entry for key \"missing\"")
 }
+
+func TestVars(t *testing.T) {
+	stdin := `{{ .first }} {{ .second }} {{ .third.nested }}`
+	stdout, _, err := runStdin(&stdin,
+		"--var", "first=value1",
+		"--var", `second="value 2"`,
+		"--var", "third.nested='and value 3'",
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "value1 value 2 and value 3", stdout)
+}
