@@ -143,6 +143,14 @@ All syntax and functions:
 See also [example](examples/example.yaml.tmpl) template 
 and a more [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).
 
+Cloud KMS (AWS, Amazon, Google) based cryptography functions form [`crypt`](https://github.com/VirtusLab/crypt):
+- `encryptAWS` - encrypts data using AWS KMS, for best results use with `gzip` and `b64enc`
+- `decryptAWS` - decrypts data using AWS KMS, for best results use with `ungzip` and `b64dec`
+- `encryptGCP` - encrypts data using GCP KMS, for best results use with `gzip` and `b64enc`
+- `decryptGCP` - decrypts data using GCP KMS, for best results use with `ungzip` and `b64dec`
+- `encryptAzure` - encrypts data using Azure Key Vault, for best results use with `gzip` and `b64enc`
+- `decryptAzure` - decrypts data using Azure Key Vault, for best results use with `ungzip` and `b64dec`
+
 #### Helm compatibility
 
 As of now, there is a limited Helm 2 Chart compatibility, simple Charts will render just fine.
@@ -150,10 +158,6 @@ As of now, there is a limited Helm 2 Chart compatibility, simple Charts will ren
 There is no plan to implement full compatibility with Helm, because of unnecessary complexity that would bring.
 
 ## Limitations and future work
-
-#### Planned new functions
-
-- `encrypt`, `decrypt` - cloud KMS (AWS, Amazon, Google) based encryption for any data
 
 #### Planned new features
 
