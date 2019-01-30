@@ -86,11 +86,11 @@ func TestNew(t *testing.T) {
 			args: args{
 				[]Parameters{
 					{"akey": "avalue"},
-					{"akey": "overriden"},
+					{"akey": "overridden"},
 				},
 			},
 			want: Parameters{
-				"akey": "overriden",
+				"akey": "overridden",
 			},
 			f: standard,
 		}, {
@@ -98,12 +98,12 @@ func TestNew(t *testing.T) {
 			args: args{
 				[]Parameters{
 					{"akey": "avalue"},
-					{"akey": "overriden"},
-					mustFromVars([]string{"akey=overriden2", "anotherkey=somevalue"}),
+					{"akey": "overridden"},
+					mustFromVars([]string{"akey=overridden2", "anotherkey=somevalue"}),
 				},
 			},
 			want: Parameters{
-				"akey":       "overriden2",
+				"akey":       "overridden2",
 				"anotherkey": "somevalue",
 			},
 			f: standard,
@@ -120,17 +120,17 @@ func TestNew(t *testing.T) {
 					{
 						"a": Parameters{
 							"nested": Parameters{
-								"key": "overriden",
+								"key": "overridden",
 							},
 						},
 					},
-					mustFromVars([]string{"a.nested.key=overriden2", "anotherkey=somevalue"}),
+					mustFromVars([]string{"a.nested.key=overridden2", "anotherkey=somevalue"}),
 				},
 			},
 			want: Parameters{
 				"a": Parameters{
 					"nested": Parameters{
-						"key": "overriden2",
+						"key": "overridden2",
 					},
 				},
 				"anotherkey": "somevalue",
