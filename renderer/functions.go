@@ -24,6 +24,10 @@ func (r *renderer) root() (string, error) {
 }
 
 // NestedRender template function allows for recursive use of the renderer
+// Accepts 1 or 2 arguments:
+// - NestedRender(template string)
+// - NestedRender(extraParams map[string]interface{}, template string)
+// Returns an error when 0 or more than 2 arguments are passed.
 func (r *renderer) NestedRender(args ...interface{}) (string, error) {
 	argN := len(args)
 
@@ -63,6 +67,9 @@ func (r *renderer) NestedRender(args ...interface{}) (string, error) {
 }
 
 // ReadFile is a template function that allows for an in-template file opening
+// It takes a file path argument, the path can be absolute
+// or relative to the process working directory.
+// The relative path root can be changed with a parameter parameter.RootKey
 func (r *renderer) ReadFile(file string) (string, error) {
 	root, err := r.root()
 	if err != nil {
