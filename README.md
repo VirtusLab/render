@@ -9,6 +9,11 @@
 Universal data-driven templates for generating textual output. Can be used as a single static binary (no dependencies)
 or as a golang library.
 
+Just some of the things to `render`:
+- configuration files
+- Infrastructure as Code files (e.g. CloudFormation templates)
+- Kubernetes manifests
+
 The renderer extends 
 [go-template](https://golang.org/pkg/text/template/) and [Sprig](http://masterminds.github.io/sprig/) functions. 
 
