@@ -3,7 +3,6 @@ package renderer
 import (
 	"bytes"
 	"compress/gzip"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"reflect"
@@ -13,6 +12,7 @@ import (
 	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/ghodss/yaml"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 func (r *renderer) root() (string, error) {

@@ -21,6 +21,9 @@ type Renderer interface {
 	base.Renderer
 	Clone(configurators ...func(*config.Config)) Renderer
 	FileRender(inputPath, outputPath string) error
+
+	NestedRender(args ...interface{}) (string, error)
+	ReadFile(file string) (string, error)
 }
 
 type renderer struct {
