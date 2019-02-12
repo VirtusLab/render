@@ -56,7 +56,6 @@ func WithMoreParameters(extraParams ...map[string]interface{}) func(*config.Conf
 		if err != nil {
 			logrus.Panicf("unexpected problem merging extra functions")
 		}
-		return
 	}
 }
 
