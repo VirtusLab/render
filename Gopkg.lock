@@ -80,7 +80,7 @@
   version = "v0.0.5"
 
 [[projects]]
-  digest = "1:9eff182dc67bfa30d9dc6f1f0f43d579cd1f11026763a8fc7e76e0a1633849ac"
+  digest = "1:928a5bfce0458ad26c838a58a33e9db25b61215c49cc2f949b5e92aa5c4ff759"
   name = "github.com/VirtusLab/go-extended"
   packages = [
     "pkg/files",
@@ -89,8 +89,8 @@
     "pkg/renderer/config",
   ]
   pruneopts = "UT"
-  revision = "9c4259185e438a50d4be94f04e8e6aca368f34b3"
-  version = "v0.0.2"
+  revision = "0cb00dfb826a51e02bd08cf49014ea404260dc8b"
+  version = "v0.0.3"
 
 [[projects]]
   digest = "1:8f5416c7f59da8600725ae1ff00a99af1da8b04c211ae6f3c8f8bcab0164f650"

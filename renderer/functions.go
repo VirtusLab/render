@@ -3,6 +3,7 @@ package renderer
 import (
 	"bytes"
 	"compress/gzip"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"reflect"
@@ -20,6 +21,45 @@ func (r *renderer) root() (string, error) {
 		return value, nil
 	}
 	return files.Pwd()
+}
+
+// NestedRender template function allows for recursive use of the renderer
+func (r *renderer) NestedRender(args ...interface{}) (string, error) {
+	argN := len(args)
+
+	logrus.Debugf("Nested render called with %d arguments", argN)
+	for i, a := range args {
+		logrus.Debugf("[%d] type: '%T', value: '%+v'", i, a, a)
+	}
+
+	var template string
+	var extraParams map[string]interface{}
+	switch argN {
+	case 1:
+		var ok bool
+		template, ok = args[0].(string)
+		if !ok {
+			return "", errors.Errorf(
+				"expected the only parameter to be a 'string', got: '%T'", args[0])
+		}
+	case 2:
+		var ok bool
+		extraParams, ok = args[0].(map[string]interface{})
+		if !ok {
+			return "", errors.Errorf(
+				"expected the first parameter to be 'map[string]interface{}', got: '%T'", args[0])
+		}
+		template, ok = args[1].(string)
+		if !ok {
+			return "", errors.Errorf(
+				"expected the second parameter to be 'string', got: '%T'", args[1])
+		}
+	default:
+		return "", errors.Errorf("expected 1 or 2 parameters, got: %d", argN)
+	}
+	return r.Clone(
+		WithMoreParameters(extraParams),
+	).Render(template)
 }
 
 // ReadFile is a template function that allows for an in-template file opening

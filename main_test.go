@@ -196,3 +196,12 @@ func TestVars(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "value1 value 2 and value 3", stdout)
 }
+
+func TestNestedRenderOverride(t *testing.T) {
+	stdin := "key: {{ .inner | render .override }}"
+	stdout, _, err := runStdin(&stdin,
+		"--config", "examples/nested-render.config.yaml")
+
+	assert.NoError(t, err)
+	assert.Equal(t, "key: other", stdout)
+}

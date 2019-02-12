@@ -1,7 +1,10 @@
 package renderer
 
 import (
+	"fmt"
 	"text/template"
+
+	"github.com/VirtusLab/render/renderer/parameters"
 
 	"github.com/Masterminds/sprig"
 	"github.com/VirtusLab/crypt/crypto"
@@ -16,7 +19,7 @@ import (
 // Renderer allows for parameterised text template rendering
 type Renderer interface {
 	base.Renderer
-
+	Clone(configurators ...func(*config.Config)) Renderer
 	FileRender(inputPath, outputPath string) error
 }
 
@@ -31,34 +34,48 @@ func New(configurators ...func(*config.Config)) Renderer {
 	}
 	r.Reconfigure(
 		WithMoreFunctions(template.FuncMap{
-			"render":   r.Render,
+			"render":   r.NestedRender,
 			"readFile": r.ReadFile,
 		}),
 	)
 	return r
 }
 
-// WithParameters mutates Renderer configuration with new template parameters
+// WithParameters mutates Renderer configuration by replacing all template parameters
 func WithParameters(parameters map[string]interface{}) func(*config.Config) {
 	return base.WithParameters(parameters)
 }
 
-// WithOptions mutates Renderer configuration with new template functions
+// WithMoreParameters mutates Renderer configuration by merging the given template parameters
+func WithMoreParameters(extraParams ...map[string]interface{}) func(*config.Config) {
+	return func(c *config.Config) {
+		var err error
+		for _, extra := range extraParams {
+			c.Parameters, err = parameters.Merge(c.Parameters, extra)
+		}
+		if err != nil {
+			logrus.Panicf("unexpected problem merging extra functions")
+		}
+		return
+	}
+}
+
+// WithOptions mutates Renderer configuration by replacing the template functions
 func WithOptions(options ...string) func(*config.Config) {
 	return base.WithOptions(options...)
 }
 
-// WithDelim mutates Renderer configuration with new left and right delimiters
+// WithDelim mutates Renderer configuration by replacing the left and right delimiters
 func WithDelim(left, right string) func(*config.Config) {
 	return base.WithDelim(left, right)
 }
 
-// WithFunctions mutates Renderer configuration with new template functions
+// WithFunctions mutates Renderer configuration by replacing the template functions
 func WithFunctions(extraFunctions template.FuncMap) func(*config.Config) {
 	return base.WithFunctions(extraFunctions)
 }
 
-// WithMoreFunctions mutates Renderer with new template functions,
+// WithMoreFunctions mutates Renderer configuration by merging the given template functions,
 func WithMoreFunctions(moreFunctions template.FuncMap) func(*config.Config) {
 	return func(c *config.Config) {
 		allFunctions := c.ExtraFunctions
@@ -70,17 +87,17 @@ func WithMoreFunctions(moreFunctions template.FuncMap) func(*config.Config) {
 	}
 }
 
-// WithExtraFunctions mutates Renderer configuration with the custom template functions
+// WithExtraFunctions mutates Renderer configuration by merging the custom template functions
 func WithExtraFunctions() func(*config.Config) {
 	return WithMoreFunctions(ExtraFunctions())
 }
 
-// WithSprigFunctions mutates Renderer configuration with the Sprig template functions
+// WithSprigFunctions mutates Renderer configuration by merging the Sprig template functions
 func WithSprigFunctions() func(*config.Config) {
 	return WithMoreFunctions(sprig.TxtFuncMap())
 }
 
-// WithCryptFunctions mutates Renderer configuration with the Crypt template functions
+// WithCryptFunctions mutates Renderer configuration by merging the Crypt template functions
 func WithCryptFunctions() func(*config.Config) {
 	return WithMoreFunctions(crypto.TemplateFunctions())
 }
@@ -123,6 +140,20 @@ func (r *renderer) FileRender(inputPath, outputPath string) error {
 	}
 
 	return nil
+}
+
+// Clone returns a new copy of the renderer modified with the optional configurators
+func (r *renderer) Clone(configurators ...func(*config.Config)) Renderer {
+	clone := &renderer{
+		Renderer: base.NewWithConfig(r.Configuration()),
+	}
+	clone.Reconfigure(configurators...)
+	logrus.Debugf("cloned renderer: %+v", clone.String())
+	return clone
+}
+
+func (r *renderer) String() string {
+	return fmt.Sprintf("%+v", r.Renderer.Configuration())
 }
 
 /*

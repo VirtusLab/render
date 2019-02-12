@@ -1,0 +1,4 @@
+inner: "{{ .value }}"
+value: "some"
+override:
+  value: "other"

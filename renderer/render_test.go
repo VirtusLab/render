@@ -1,6 +1,7 @@
 package renderer
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/VirtusLab/render/renderer/parameters"
@@ -90,6 +91,83 @@ func TestRenderer_NamedRender_Render(t *testing.T) {
 			params := parameters.Parameters{
 				"inner": "{{ .value }}",
 				"value": "some",
+			}
+
+			result, err := New(WithParameters(params)).NamedRender(tt.name, input)
+
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 0, CountProblems(tt.logHook))
+		},
+	})
+}
+
+func TestRenderer_NamedRender_RenderOverride(t *testing.T) {
+	Run(t, Test{
+		name: "render render with override",
+		f: func(tt Test) {
+			input := `first: {{ .value }}
+second: {{ .inner | render .override }}`
+			expected := `first: some
+second: other`
+			params := parameters.Parameters{
+				"inner": "{{ .value }}",
+				"value": "some",
+				"override": map[string]interface{}{
+					"value": "other",
+				},
+			}
+
+			result, err := New(WithParameters(params)).NamedRender(tt.name, input)
+
+			assert.NoError(t, err, tt.name)
+			assert.Equal(t, expected, result, tt.name)
+			assert.Equal(t, 0, CountProblems(tt.logHook))
+		},
+	})
+}
+
+func TestRenderer_NamedRender_RenderTooManyArgs(t *testing.T) {
+	Run(t, Test{
+		name: "render render with override and too many args",
+		f: func(tt Test) {
+			input := `{{ .inner | render .override "too-many" }}`
+			params := parameters.Parameters{
+				"inner": "{{ .value }}",
+				"value": "some",
+				"override": map[string]interface{}{
+					"value": "other",
+				},
+			}
+
+			_, err := New(WithParameters(params)).NamedRender(tt.name, input)
+
+			assert.Error(t, err, tt.name)
+			assert.True(t, strings.Contains(err.Error(), "expected 1 or 2 parameters, got: 3"))
+			assert.Equal(t, 0, CountProblems(tt.logHook))
+		},
+	})
+}
+
+func TestRenderer_NamedRender_RenderOverride_Twice(t *testing.T) {
+	Run(t, Test{
+		name: "render render with override",
+		f: func(tt Test) {
+			input := `first: {{ .inner | render }}
+second: {{ .inner | render .override }}
+third: {{ .inner | render .overrider }}`
+			expected := `first: some
+second: other
+third: otherer`
+			params := parameters.Parameters{
+				"inner": "{{ .value }}",
+				"value": "some",
+				"override": map[string]interface{}{
+					"value": "other",
+				},
+				"overrider": map[string]interface{}{
+					"value": "otherer",
+				},
 			}
 
 			result, err := New(WithParameters(params)).NamedRender(tt.name, input)
