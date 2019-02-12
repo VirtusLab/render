@@ -134,7 +134,7 @@ All syntax and functions:
 
 #### Custom functions
 
-- `render` - calls the `render` from inside of the template, making the renderer recursive
+- `render` - calls the `render` from inside of the template, making the renderer recursive (also accepts an optional template parameters override)
 - `readFile` - reads a file from a path, relative paths are translated to absolute paths, based on `root` function
 - `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
 - `toYaml` - provides a configuration data structure fragment as a YAML format
