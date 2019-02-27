@@ -54,7 +54,7 @@ all: clean dep verify build install ## Test, build, install
 init: ## Initializes this Makefile dependencies: dep, golint, staticcheck, checkmake
 	@echo "+ $@"
 	go get -u github.com/golang/dep/cmd/dep
-	go get -u github.com/golang/lint/golint
+	go get -u golang.org/x/lint/golint
 	go get -u honnef.co/go/tools/cmd/staticcheck
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u github.com/mrtazz/checkmake
