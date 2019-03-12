@@ -1,0 +1,14 @@
+name: {{ .app_name }}
+
+nested:
+  things:
+{{- range $i, $value := .nested.things}}
+  - {{ $value }}: {{ add 1 $i }}
+{{- end }}
+
+from_file:
+  {{ readFile .inner.path | render }}
+
+from_gzip: {{ .compressed.encoded | b64dec | ungzip | quote }}
+
+to_gzip: {{ .embed | gzip | b64enc | quote }}

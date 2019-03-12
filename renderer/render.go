@@ -2,18 +2,21 @@ package renderer
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 	"text/template"
-
-	"github.com/VirtusLab/render/renderer/parameters"
 
 	"github.com/Masterminds/sprig"
 	"github.com/VirtusLab/crypt/crypto"
 	"github.com/VirtusLab/go-extended/pkg/files"
 	base "github.com/VirtusLab/go-extended/pkg/renderer"
 	"github.com/VirtusLab/go-extended/pkg/renderer/config"
+	"github.com/VirtusLab/render/renderer/parameters"
 	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/urfave/cli.v1"
+	"os"
 )
 
 // Renderer allows for parameterised text template rendering
@@ -21,7 +24,7 @@ type Renderer interface {
 	base.Renderer
 	Clone(configurators ...func(*config.Config)) Renderer
 	FileRender(inputPath, outputPath string) error
-
+	DirRender(inputDir, outputDir string) error
 	NestedRender(args ...interface{}) (string, error)
 	ReadFile(file string) (string, error)
 }
@@ -29,6 +32,15 @@ type Renderer interface {
 type renderer struct {
 	base.Renderer
 }
+
+type direntry struct {
+	path      string
+	filename  string
+	extension string
+}
+
+var filelist []direntry
+var targetFilename string
 
 // New creates a new renderer with the specified parameters and zero or more options
 func New(configurators ...func(*config.Config)) Renderer {
@@ -113,7 +125,76 @@ func MergeFunctions(dst *template.FuncMap, src template.FuncMap) error {
 	return nil
 }
 
-// TODO DirRender
+var dirhandler = func(path string, info os.FileInfo, direrr error) error {
+	if direrr != nil {
+		logrus.Errorf("error 「%v」 at a path 「%s」\n", direrr, path)
+		return direrr
+	}
+
+	logrus.Debugf("Discovered path: %s\n", path)
+
+	if !info.IsDir() {
+		logrus.Debugf("  dir: 「%s」\n", filepath.Dir(path))
+		logrus.Debugf("  file name 「%s」\n", info.Name())
+		logrus.Debugf("  extension: 「%s」\n", filepath.Ext(path))
+
+		var entry direntry
+
+		entry.path = filepath.Dir(path)
+		entry.filename = info.Name()
+		entry.extension = filepath.Ext(path)
+
+		filelist = append(filelist, entry)
+	}
+	return nil
+}
+
+func (r *renderer) DirRender(inputDir, outputDir string) error {
+
+	logrus.Infof("Directory mode selected \n")
+
+	err := filepath.Walk(inputDir, dirhandler)
+	if err != nil {
+		logrus.Infof("error walking the path %s: %v\n", inputDir, err)
+	}
+
+	for _, fileitem := range filelist {
+
+		logrus.Infof("Processing %s \n", fileitem.path+"/"+fileitem.filename)
+
+		if fileitem.extension == ".tpl" {
+			targetFilename = strings.Replace(fileitem.filename, ".tpl", "", -1)
+		} else if fileitem.extension == ".tmpl" {
+			targetFilename = strings.Replace(fileitem.filename, ".tmpl", "", -1)
+		} else {
+			targetFilename = fileitem.filename
+		}
+
+		rel, err := filepath.Rel(inputDir, fileitem.path)
+
+		if err != nil {
+			logrus.Errorf("Something went wrong: %v", err)
+			cli.OsExiter(1)
+		}
+
+		targetDir := outputDir + "/" + rel
+
+		if _, err := os.Stat(targetDir); os.IsNotExist(err) {
+			os.MkdirAll(targetDir, os.ModePerm)
+		}
+
+		logrus.Infof("Rendering %s \n", targetDir+"/"+targetFilename)
+
+		err = r.FileRender(fileitem.path+"/"+fileitem.filename, targetDir+"/"+targetFilename)
+		if err != nil {
+			logrus.Errorf("Something went wrong: %v", err)
+			cli.OsExiter(1)
+		}
+
+	}
+
+	return nil
+}
 
 // FileRender is used to render files by path, see also Render
 func (r *renderer) FileRender(inputPath, outputPath string) error {

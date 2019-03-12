@@ -148,6 +148,34 @@ func TestRender(t *testing.T) {
 	assert.Equal(t, string(expected), stdout)
 }
 
+func TestDirIncompleteArgs(t *testing.T) {
+	stdout, stderr, err := run("--config", "examples/example.config.yaml", "--indir", "examples/directory-test")
+	assert.EqualError(t, err, "exit status 1")
+
+	expectedStdout := ``
+	assert.Equal(t, expectedStdout, stdout)
+
+	expectedStderr := `You need to specify --outdir parameter`
+	assert.Contains(t, stderr, expectedStderr)
+}
+
+func TestDirComplete(t *testing.T) {
+	stdout, _, err := run("--config", "examples/example.config.yaml", "--indir", "examples/directory-test", "--outdir", "examples/directory-test-rendered")
+	assert.EqualError(t, err, "exit status 1")
+
+	expectedPath := "examples/directory-test-rendered/example.yaml"
+	expected, err := files.ReadInput(expectedPath)
+
+	assert.NoErrorf(t, err, "cannot read test file: '%s'", expectedPath)
+	assert.Contains(t, string(expected), stdout, "name: render")
+
+	expectedPath = "examples/directory-test-rendered/subdirectory/example.yaml"
+	expected, err = files.ReadInput(expectedPath)
+
+	assert.NoErrorf(t, err, "cannot read test file: '%s'", expectedPath)
+	assert.Contains(t, string(expected), stdout, "name: render")
+}
+
 func TestNoArgs(t *testing.T) {
 	stdout, stderr, err := run()
 	assert.EqualError(t, err, "exit status 1")

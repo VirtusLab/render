@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/VirtusLab/render/constants"
-	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/renderer/parameters"
 	"github.com/VirtusLab/render/version"
-
-	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/sirupsen/logrus"
+	"github.com/VirtusLab/render/renderer"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -18,6 +17,8 @@ var (
 	app         *cli.App
 	inputPath   string
 	outputPath  string
+	inputDir    string
+	outputDir   string
 	configPaths cli.StringSlice
 	vars        cli.StringSlice
 )
@@ -35,6 +36,18 @@ func main() {
 		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "run in debug mode",
+		},
+		cli.StringFlag{
+			Name:        "indir",
+			Value:       "",
+			Usage:       "input directory",
+			Destination: &inputDir,
+		},
+		cli.StringFlag{
+			Name:        "outdir",
+			Value:       "",
+			Usage:       "output directory",
+			Destination: &outputDir,
 		},
 		cli.StringFlag{
 			Name:        "in",
@@ -88,7 +101,7 @@ func main() {
 	if err := app.Run(os.Args); err != nil {
 		_, err := fmt.Fprintf(cli.ErrWriter, "ERROR: %v\n", err)
 		if err != nil {
-			logrus.Errorf("Unexpected error: %s", err)
+			logrus.Errorf("Unexpected error: %v", err)
 		}
 		cli.OsExiter(1)
 	}
@@ -127,6 +140,20 @@ func action(_ *cli.Context) error {
 		renderer.WithExtraFunctions(),
 		renderer.WithCryptFunctions(),
 	)
+
+	if inputDir != "" {
+		if outputDir == "" {
+			logrus.Error("You need to specify --outdir parameter")
+			cli.OsExiter(1)
+		}
+
+		err = r.DirRender(inputDir, outputDir)
+		if err != nil {
+			logrus.Errorf("Something went wrong: %v", err)
+		}
+		cli.OsExiter(1)
+	}
+
 	err = r.FileRender(inputPath, outputPath)
 	if err != nil {
 		if err == files.ErrExpectedStdin {
