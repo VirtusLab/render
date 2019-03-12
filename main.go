@@ -150,8 +150,8 @@ func action(_ *cli.Context) error {
 		err = r.DirRender(inputDir, outputDir)
 		if err != nil {
 			logrus.Errorf("Something went wrong: %v", err)
+			cli.OsExiter(1)
 		}
-		cli.OsExiter(1)
 	}
 
 	err = r.FileRender(inputPath, outputPath)
