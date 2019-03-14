@@ -58,7 +58,7 @@ USAGE:
    render [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.9-3155324
+   v0.0.9-55cc832
 
 AUTHOR:
    VirtusLab
@@ -68,8 +68,10 @@ COMMANDS:
 
 GLOBAL OPTIONS:
    --debug, -d               run in debug mode
-   --in value                the input template file, stdin if empty
-   --out value               the output file, stdout if empty
+   --indir value             the input directory, can't be used with --out
+   --outdir value            the output directory, the same as --outdir if empty, can't be used with --in
+   --in value                the input template file, stdin if empty, can't be used with --outdir
+   --out value               the output file, stdout if empty, can't be used with --indir
    --config value            optional configuration YAML file, can be used multiple times
    --set value, --var value  additional parameters in key=value format, can be used multiple times
    --help, -h                show help
@@ -77,7 +79,7 @@ GLOBAL OPTIONS:
 ```
 
 **Notes:**
-- `--in`, `--out` take only files (not directories) at the moment, `--in` will consume any file as long as it can be parsed
+- `--in`, `--out` take only files (not directories), `--in` will consume any file as long as it can be parsed
 - `stdin` and `stdout` can be used instead of `--in` and `--out`
 - `--config` accepts any YAML file, can be used multiple times, the values of the configs will be merged
 - `--set`, `--var` are the same (one is used in Helm, the other in Terraform), we provide both for convenience, any values set here **will override** values form configuration files
@@ -166,7 +168,7 @@ There is no plan to implement full compatibility with Helm, because of unnecessa
 
 #### Planned new features
 
-- directories as `--in` and `--out` arguments, currently only files are supported
+- `.renderignore` files
 
 #### Operating system support
 
