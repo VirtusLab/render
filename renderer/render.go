@@ -140,9 +140,15 @@ func (r *renderer) DirRender(inputDir, outputDir string) error {
 
 		target.path = path.Join(outputDir, rel)
 
-		if _, err := os.Stat(target.path); os.IsNotExist(err) {
+		_, err = os.Stat(target.path)
+		if os.IsNotExist(err) {
 			err := os.MkdirAll(target.path, os.ModePerm)
-			return errors.Wrapf(err, "can't create the target directory: '%s'", target.path)
+			if err != nil {
+				return errors.Wrapf(err, "can't create the target directory: '%s'", target.path)
+			}
+			logrus.Infof("Target directory was created: '%s'", target.path)
+		} else if err != nil {
+			return errors.Wrapf(err, "can't get file information for '%s'", target.path)
 		}
 
 		logrus.Infof("Rendering %s \n", path.Join(target.path, target.name))
