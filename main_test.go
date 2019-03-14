@@ -148,32 +148,20 @@ func TestRender(t *testing.T) {
 	assert.Equal(t, string(expected), stdout)
 }
 
-func TestDirIncompleteArgs(t *testing.T) {
-	stdout, stderr, err := run("--config", "examples/example.config.yaml", "--indir", "examples/directory-test")
-	assert.EqualError(t, err, "exit status 1")
+func TestDirRender(t *testing.T) {
+	stdout, _, err := run("--config", "examples/example.config.yaml", "--indir", "examples/directory-test")
+	assert.NoError(t, err)
 
-	expectedStdout := ``
-	assert.Equal(t, expectedStdout, stdout)
-
-	expectedStderr := `You need to specify --outdir parameter`
-	assert.Contains(t, stderr, expectedStderr)
-}
-
-func TestDirComplete(t *testing.T) {
-	stdout, _, err := run("--config", "examples/example.config.yaml", "--indir", "examples/directory-test", "--outdir", "examples/directory-test-rendered")
-	assert.EqualError(t, err, "exit status 1")
-
-	expectedPath := "examples/directory-test-rendered/example.yaml"
+	expectedPath := "examples/directory-test/example.yaml"
 	expected, err := files.ReadInput(expectedPath)
-
 	assert.NoErrorf(t, err, "cannot read test file: '%s'", expectedPath)
-	assert.Contains(t, string(expected), stdout, "name: render")
 
-	expectedPath = "examples/directory-test-rendered/subdirectory/example.yaml"
-	expected, err = files.ReadInput(expectedPath)
+	expectedSubPath := "examples/directory-test/subdirectory/example.yaml"
+	expectedSub, err := files.ReadInput(expectedSubPath)
+	assert.NoErrorf(t, err, "cannot read test file: '%s'", expectedSubPath)
 
-	assert.NoErrorf(t, err, "cannot read test file: '%s'", expectedPath)
 	assert.Contains(t, string(expected), stdout, "name: render")
+	assert.Contains(t, string(expectedSub), stdout, "name: render")
 }
 
 func TestNoArgs(t *testing.T) {
@@ -183,7 +171,7 @@ func TestNoArgs(t *testing.T) {
 	expectedStdout := ``
 	assert.Equal(t, expectedStdout, stdout)
 
-	expectedStderr := `expected either stdin or --in parameter, for usage use --help`
+	expectedStderr := `expected either stdin, --indir or --in parameter, for usage use --help`
 	assert.Contains(t, stderr, expectedStderr)
 }
 

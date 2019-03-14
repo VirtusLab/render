@@ -6,17 +6,17 @@ import (
 
 	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/VirtusLab/render/constants"
+	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/renderer/parameters"
 	"github.com/VirtusLab/render/version"
 	"github.com/sirupsen/logrus"
-	"github.com/VirtusLab/render/renderer"
 	"gopkg.in/urfave/cli.v1"
 )
 
 var (
 	app         *cli.App
-	inputPath   string
-	outputPath  string
+	inputFile   string
+	outputFile  string
 	inputDir    string
 	outputDir   string
 	configPaths cli.StringSlice
@@ -40,26 +40,26 @@ func main() {
 		cli.StringFlag{
 			Name:        "indir",
 			Value:       "",
-			Usage:       "input directory",
+			Usage:       "the input directory, can't be used with --out",
 			Destination: &inputDir,
 		},
 		cli.StringFlag{
 			Name:        "outdir",
 			Value:       "",
-			Usage:       "output directory",
+			Usage:       "the output directory, the same as --outdir if empty, can't be used with --in",
 			Destination: &outputDir,
 		},
 		cli.StringFlag{
 			Name:        "in",
 			Value:       "",
-			Usage:       "the input template file, stdin if empty",
-			Destination: &inputPath,
+			Usage:       "the input template file, stdin if empty, can't be used with --outdir",
+			Destination: &inputFile,
 		},
 		cli.StringFlag{
 			Name:        "out",
 			Value:       "",
-			Usage:       "the output file, stdout if empty",
-			Destination: &outputPath,
+			Usage:       "the output file, stdout if empty, can't be used with --indir",
+			Destination: &outputFile,
 		},
 		cli.StringSliceFlag{
 			Name:  "config",
@@ -141,25 +141,35 @@ func action(_ *cli.Context) error {
 		renderer.WithCryptFunctions(),
 	)
 
-	if inputDir != "" {
-		if outputDir == "" {
-			logrus.Error("You need to specify --outdir parameter")
-			cli.OsExiter(1)
+	if len(inputDir) > 0 {
+		if len(inputFile) > 0 {
+			return fmt.Errorf("conflict, --in can't be used with --indir or --outdir")
+		}
+		if len(outputFile) > 0 {
+			return fmt.Errorf("conflict, --out can't be used with --indir or --outdir")
+		}
+		if len(outputDir) == 0 {
+			outputDir = inputDir
 		}
 
 		err = r.DirRender(inputDir, outputDir)
 		if err != nil {
-			logrus.Errorf("Something went wrong: %v", err)
-			cli.OsExiter(1)
+			return err
 		}
-	}
-
-	err = r.FileRender(inputPath, outputPath)
-	if err != nil {
-		if err == files.ErrExpectedStdin {
-			return fmt.Errorf("expected either stdin or --in parameter, for usage use --help")
+	} else {
+		if len(inputDir) > 0 {
+			return fmt.Errorf("conflict, --indir can't be used with --in or --out")
 		}
-		return err
+		if len(outputDir) > 0 {
+			return fmt.Errorf("conflict, --outdir can't be used with --in or --out")
+		}
+		err = r.FileRender(inputFile, outputFile)
+		if err != nil {
+			if err == files.ErrExpectedStdin {
+				return fmt.Errorf("expected either stdin, --indir or --in parameter, for usage use --help")
+			}
+			return err
+		}
 	}
 
 	return nil

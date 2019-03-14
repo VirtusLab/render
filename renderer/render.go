@@ -2,6 +2,8 @@ package renderer
 
 import (
 	"fmt"
+	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -15,8 +17,6 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/urfave/cli.v1"
-	"os"
 )
 
 // Renderer allows for parameterised text template rendering
@@ -32,15 +32,6 @@ type Renderer interface {
 type renderer struct {
 	base.Renderer
 }
-
-type direntry struct {
-	path      string
-	filename  string
-	extension string
-}
-
-var filelist []direntry
-var targetFilename string
 
 // New creates a new renderer with the specified parameters and zero or more options
 func New(configurators ...func(*config.Config)) Renderer {
@@ -125,78 +116,47 @@ func MergeFunctions(dst *template.FuncMap, src template.FuncMap) error {
 	return nil
 }
 
-var dirhandler = func(path string, info os.FileInfo, direrr error) error {
-	if direrr != nil {
-		logrus.Errorf("error 「%v」 at a path 「%s」\n", direrr, path)
-		return direrr
-	}
+// TODO parametrize
+var defaultTemplateExtensions = []string{".tpl", ".tmpl"}
 
-	logrus.Debugf("Discovered path: %s\n", path)
-
-	if !info.IsDir() {
-		logrus.Debugf("  dir: 「%s」\n", filepath.Dir(path))
-		logrus.Debugf("  file name 「%s」\n", info.Name())
-		logrus.Debugf("  extension: 「%s」\n", filepath.Ext(path))
-
-		var entry direntry
-
-		entry.path = filepath.Dir(path)
-		entry.filename = info.Name()
-		entry.extension = filepath.Ext(path)
-
-		filelist = append(filelist, entry)
-	}
-	return nil
-}
-
+// DirRender is used to render files by directory, see also FileRender
 func (r *renderer) DirRender(inputDir, outputDir string) error {
+	logrus.Infof("Directory mode selected")
 
-	logrus.Infof("Directory mode selected \n")
-
-	err := filepath.Walk(inputDir, dirhandler)
+	fileEntries, err := dirTree(inputDir)
 	if err != nil {
-		logrus.Infof("error walking the path %s: %v\n", inputDir, err)
+		return errors.Wrapf(err, "can't scan the directory tree: '%s'", inputDir)
 	}
 
-	for _, fileitem := range filelist {
+	for _, file := range fileEntries {
+		logrus.Infof("Processing '%s'", path.Join(file.path, file.name))
 
-		logrus.Infof("Processing %s \n", fileitem.path+"/"+fileitem.filename)
+		target := trimExtension(file, defaultTemplateExtensions)
 
-		if fileitem.extension == ".tpl" {
-			targetFilename = strings.Replace(fileitem.filename, ".tpl", "", -1)
-		} else if fileitem.extension == ".tmpl" {
-			targetFilename = strings.Replace(fileitem.filename, ".tmpl", "", -1)
-		} else {
-			targetFilename = fileitem.filename
-		}
-
-		rel, err := filepath.Rel(inputDir, fileitem.path)
-
+		rel, err := filepath.Rel(inputDir, file.path)
 		if err != nil {
-			logrus.Errorf("Something went wrong: %v", err)
-			cli.OsExiter(1)
+			return errors.Wrapf(err, "can't get a relative path for: '%s'", file.path)
 		}
 
-		targetDir := outputDir + "/" + rel
+		target.path = path.Join(outputDir, rel)
 
-		if _, err := os.Stat(targetDir); os.IsNotExist(err) {
-			os.MkdirAll(targetDir, os.ModePerm)
+		if _, err := os.Stat(target.path); os.IsNotExist(err) {
+			err := os.MkdirAll(target.path, os.ModePerm)
+			return errors.Wrapf(err, "can't create the target directory: '%s'", target.path)
 		}
 
-		logrus.Infof("Rendering %s \n", targetDir+"/"+targetFilename)
+		logrus.Infof("Rendering %s \n", path.Join(target.path, target.name))
 
-		err = r.FileRender(fileitem.path+"/"+fileitem.filename, targetDir+"/"+targetFilename)
+		err = r.FileRender(path.Join(file.path, file.name), path.Join(target.path, target.name))
 		if err != nil {
-			logrus.Errorf("Something went wrong: %v", err)
-			cli.OsExiter(1)
+			return errors.Wrap(err, "can't render a file")
 		}
-
 	}
 
 	return nil
 }
 
-// FileRender is used to render files by path, see also Render
+// FileRender is used to render files by path, see also DirRender
 func (r *renderer) FileRender(inputPath, outputPath string) error {
 	input, err := files.ReadInput(inputPath)
 	if err != nil {
@@ -218,7 +178,7 @@ func (r *renderer) FileRender(inputPath, outputPath string) error {
 
 	err = files.WriteOutput(outputPath, []byte(result), 0644)
 	if err != nil {
-		logrus.Debugf("Can't save the rendered: %v", err)
+		logrus.Debugf("Can't save the rendered file: %v", err)
 		return err
 	}
 
@@ -253,4 +213,53 @@ func ExtraFunctions() template.FuncMap {
 		"ungzip": Ungzip,
 		"gzip":   Gzip,
 	}
+}
+
+// TODO move to files package
+type dirEntry struct {
+	path      string
+	name      string
+	extension string
+}
+
+// TODO move to files package
+func dirTree(input string) (entries []dirEntry, err error) {
+	err = filepath.Walk(input, func(path string, info os.FileInfo, dirErr error) error {
+		if dirErr != nil {
+			logrus.Errorf("error '%v' on path '%s'", dirErr, path)
+			return dirErr
+		}
+
+		logrus.Debugf("Discovered path: '%s'", path)
+
+		if !info.IsDir() {
+			logrus.Tracef("  dir  : '%s'", filepath.Dir(path))
+			logrus.Tracef("  name : '%s'", info.Name())
+			logrus.Tracef("  ext  : '%s'", filepath.Ext(path))
+
+			entry := dirEntry{
+				path:      filepath.Dir(path),
+				name:      info.Name(),
+				extension: filepath.Ext(path),
+			}
+			entries = append(entries, entry)
+		}
+		return nil
+	})
+	if err != nil {
+		return entries, errors.Wrapf(err, "can't walk the directory tree '%s'", input)
+	}
+
+	return entries, nil
+}
+
+func trimExtension(file dirEntry, extensions []string) (new dirEntry) {
+	new = file
+	for _, ext := range extensions {
+		if file.extension == ext {
+			new.name = strings.TrimSuffix(file.name, ext)
+			new.extension = filepath.Ext(new.name)
+		}
+	}
+	return
 }
