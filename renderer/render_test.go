@@ -224,6 +224,18 @@ func TestRenderer_Render_Pipe(t *testing.T) {
 	})
 }
 
+func TestRenderer_FuzzFalsePositive1(t *testing.T) {
+	t.Run("go-fuzz crash 1", func(t *testing.T) {
+		input := "{{range $,$ =.}}{{end}}"
+		output, err := New(
+			WithSprigFunctions(),
+			WithExtraFunctions(),
+		).Render(input)
+		assert.NoError(t, err)
+		assert.Equal(t, "", output)
+	})
+}
+
 func TestRenderer_Render_Validate_Default(t *testing.T) {
 	Run(t, Test{
 		name: "validation",

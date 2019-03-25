@@ -8,12 +8,13 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/VirtusLab/render/renderer/parameters"
+
 	"github.com/Masterminds/sprig"
 	"github.com/VirtusLab/crypt/crypto"
 	"github.com/VirtusLab/go-extended/pkg/files"
 	base "github.com/VirtusLab/go-extended/pkg/renderer"
 	"github.com/VirtusLab/go-extended/pkg/renderer/config"
-	"github.com/VirtusLab/render/renderer/parameters"
 	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
