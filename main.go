@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/VirtusLab/go-extended/pkg/files"
-	"github.com/VirtusLab/go-extended/pkg/renderer/config"
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/renderer/parameters"
-	"github.com/VirtusLab/render/version"
+
+	"github.com/VirtusLab/go-extended/pkg/renderer/config"
+	"github.com/VirtusLab/go-extended/pkg/files"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -30,7 +30,7 @@ func main() {
 	app.Name = constants.Name
 	app.Usage = constants.Description
 	app.Author = constants.Author
-	app.Version = fmt.Sprintf("%s-%s", version.VERSION, version.GITCOMMIT)
+	app.Version = constants.Version()
 	app.Before = preload
 	app.Action = action
 
@@ -117,6 +117,7 @@ func main() {
 func preload(c *cli.Context) error {
 	logrus.SetFormatter(&logrus.TextFormatter{DisableTimestamp: true})
 	logrus.SetLevel(logrus.InfoLevel)
+	logrus.Infof("Version %s", app.Version)
 
 	if c.GlobalBool("debug") {
 		logrus.SetLevel(logrus.DebugLevel)
