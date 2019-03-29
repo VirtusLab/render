@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/VirtusLab/go-extended/pkg/files"
+	"github.com/VirtusLab/go-extended/pkg/renderer/config"
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/renderer/parameters"
@@ -14,13 +15,14 @@ import (
 )
 
 var (
-	app         *cli.App
-	inputFile   string
-	outputFile  string
-	inputDir    string
-	outputDir   string
-	configPaths cli.StringSlice
-	vars        cli.StringSlice
+	app                     *cli.App
+	inputFile               string
+	outputFile              string
+	inputDir                string
+	outputDir               string
+	configPaths             cli.StringSlice
+	vars                    cli.StringSlice
+	unsafeIgnoreMissingKeys bool
 )
 
 func main() {
@@ -70,6 +72,11 @@ func main() {
 			Name:  "set, var",
 			Usage: "additional parameters in key=value format, can be used multiple times",
 			Value: &vars,
+		},
+		cli.BoolFlag{
+			Name:        "unsafe-ignore-missing-keys",
+			Usage:       "do not fail on missing map key and print '<no value>' ('missingkey=invalid')",
+			Destination: &unsafeIgnoreMissingKeys,
 		},
 	}
 
@@ -129,12 +136,19 @@ func preload(c *cli.Context) error {
 }
 
 func action(_ *cli.Context) error {
+	opts := []string{config.MissingKeyErrorOption}
+	if unsafeIgnoreMissingKeys {
+		logrus.Warnf("You are using '--unsafe-ignore-missing-keys' and %s will use option '%s'",
+			app.Name, config.MissingKeyInvalidOption)
+		opts = []string{config.MissingKeyInvalidOption}
+	}
 	params, err := parameters.All(configPaths, vars)
 	if err != nil {
 		return err
 	}
 
 	r := renderer.New(
+		renderer.WithOptions(opts...),
 		renderer.WithParameters(params),
 		renderer.WithSprigFunctions(),
 		renderer.WithExtraFunctions(),

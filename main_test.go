@@ -201,6 +201,15 @@ func TestMissingKeyError(t *testing.T) {
 	assert.Contains(t, stderr, "map has no entry for key \"missing\"")
 }
 
+func TestMissingKeyInvalid(t *testing.T) {
+	stdin := "{{ .missing }}"
+	stdout, stderr, err := runStdin(&stdin, "--unsafe-ignore-missing-keys")
+
+	assert.NoError(t, err)
+	assert.Equal(t, "<no value>", stdout)
+	assert.NotContains(t, stderr, "error")
+}
+
 func TestVars(t *testing.T) {
 	stdin := `{{ .first }} {{ .second }} {{ .third.nested }}`
 	stdout, _, err := runStdin(&stdin,
