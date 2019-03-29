@@ -113,8 +113,9 @@ import (
     "github.com/VirtusLab/render/renderer/parameters"
 )
 
-func CustomRender(template string, params parameters.Parameters) (string, error) {
+func CustomRender(template string, opts []string, params parameters.Parameters) (string, error) {
     return renderer.New(
+    	renderer.WithOptions(opts...),
         renderer.WithParameters(params),
         renderer.WithSprigFunctions(),
         renderer.WithExtraFunctions(),
