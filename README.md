@@ -58,7 +58,7 @@ USAGE:
    render [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.1.1-55cc832
+   v0.1.1-86eb03f
 
 AUTHOR:
    VirtusLab
@@ -67,15 +67,16 @@ COMMANDS:
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --debug, -d               run in debug mode
-   --indir value             the input directory, can't be used with --out
-   --outdir value            the output directory, the same as --outdir if empty, can't be used with --in
-   --in value                the input template file, stdin if empty, can't be used with --outdir
-   --out value               the output file, stdout if empty, can't be used with --indir
-   --config value            optional configuration YAML file, can be used multiple times
-   --set value, --var value  additional parameters in key=value format, can be used multiple times
-   --help, -h                show help
-   --version, -v             print the version
+   --debug, -d                   run in debug mode
+   --indir value                 the input directory, can't be used with --out
+   --outdir value                the output directory, the same as --outdir if empty, can't be used with --in
+   --in value                    the input template file, stdin if empty, can't be used with --outdir
+   --out value                   the output file, stdout if empty, can't be used with --indir
+   --config value                optional configuration YAML file, can be used multiple times
+   --set value, --var value      additional parameters in key=value format, can be used multiple times
+   --unsafe-ignore-missing-keys  do not fail on missing map key and print '<no value>' ('missingkey=invalid')
+   --help, -h                    show help
+   --version, -v                 print the version
 ```
 
 **Notes:**
