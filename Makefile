@@ -87,7 +87,7 @@ fmt: ## Verifies all files have been `gofmt`ed
 .PHONY: lint
 lint: ## Verifies `golint` passes
 	@echo "+ $@"
-	@golint $(PACKAGES)
+	@golint -set_exit_status $(PACKAGES)
 
 .PHONY: goimports
 goimports: ## Verifies `goimports` passes
