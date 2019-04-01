@@ -172,7 +172,7 @@ There is no plan to implement full compatibility with Helm, because of unnecessa
 
 #### Planned new features
 
-- `.renderignore` files
+- `.renderignore` files #12
 
 #### Operating system support
 
