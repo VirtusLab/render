@@ -230,3 +230,48 @@ func TestNestedRenderOverride(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "key: other", stdout)
 }
+
+func TestRegression_11(t *testing.T) {
+	t.Run("regression #11", func(t *testing.T) {
+		stdin := `apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: default
+spec:
+  hard:
+    {{- if .resourceQuota.hard.cpu }}
+    cpu: {{ .resourceQuota.hard.cpu }}
+    {{- else }}
+    cpu: "1"
+    {{- end}}`
+
+		expected1 := `apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: default
+spec:
+  hard:
+    cpu: 10`
+
+		stdout1, stderr1, err := runStdin(&stdin,
+			"--var", "resourceQuota.hard.cpu=10", "--unsafe-ignore-missing-keys")
+
+		assert.NoError(t, err)
+		assert.Equal(t, expected1, stdout1)
+		assert.NotContains(t, stderr1, "error")
+
+		expected2 := `apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: default
+spec:
+  hard:
+    cpu: "1"`
+
+		stdout2, stderr2, err := runStdin(&stdin, "--unsafe-ignore-missing-keys")
+
+		assert.NoError(t, err)
+		assert.Equal(t, expected2, stdout2)
+		assert.NotContains(t, stderr2, "error")
+	})
+}

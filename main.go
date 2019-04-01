@@ -8,8 +8,8 @@ import (
 	"github.com/VirtusLab/render/renderer"
 	"github.com/VirtusLab/render/renderer/parameters"
 
-	"github.com/VirtusLab/go-extended/pkg/renderer/config"
 	"github.com/VirtusLab/go-extended/pkg/files"
+	"github.com/VirtusLab/go-extended/pkg/renderer/config"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 )
