@@ -198,7 +198,7 @@ func TestMissingKeyError(t *testing.T) {
 	assert.EqualError(t, err, "exit status 1")
 	assert.Equal(t, "", stdout)
 	assert.Contains(t, stderr, "stdin:1:3")
-	assert.Contains(t, stderr, "map has no entry for key \"missing\"")
+	assert.Contains(t, stderr, "map has no entry for key \\\"missing\\\"")
 }
 
 func TestMissingKeyInvalid(t *testing.T) {
