@@ -15,6 +15,7 @@ const (
 	Author = "VirtusLab"
 )
 
+// Version returns the full version set at compile-time
 func Version() string {
 	ver := version.VERSION
 	if len(ver) == 0 {
