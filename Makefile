@@ -1,11 +1,10 @@
+# Setup variables for the Makefile
+NAME=render
+PKG=github.com/VirtusLab/render
+
 # Set POSIX sh for maximum interoperability
 SHELL := /bin/sh
 PATH  := $(GOPATH)/bin:$(PATH)
-
-# Import config
-# You can change the default config with `make config="config_special.env" build`
-config ?= config.env
-include $(config)
 
 # Set an output prefix, which is the local directory if not specified
 PREFIX?=$(shell pwd)
@@ -179,10 +178,10 @@ spring-clean: ## Cleanup git ignored files (interactive)
 BUMP := patch
 bump-version: ## Bump the version in the version file. Set BUMP to [ patch | major | minor ]
 	@echo "+ $@"
-	@go get -u github.com/jessfraz/junk/sembump # update sembump tool
+	go get -u github.com/jessfraz/junk/sembump # update sembump tool
 	$(eval NEW_VERSION=$(shell sembump --kind $(BUMP) $(VERSION)))
 	@echo "Bumping VERSION.txt from $(VERSION) to $(NEW_VERSION)"
-	echo $(NEW_VERSION) > VERSION.txt
+	@echo $(NEW_VERSION) > VERSION.txt
 	@echo "Updating version from $(VERSION) to $(NEW_VERSION) in README.md"
 	sed -i s/$(VERSION)/$(NEW_VERSION)/g README.md
 	git add VERSION.txt README.md
