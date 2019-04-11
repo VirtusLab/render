@@ -164,7 +164,7 @@ Cloud KMS (AWS, Amazon, Google) based cryptography functions form [`crypt`](http
 
 As of now, there is a limited Helm 2 Chart compatibility, simple Charts will render just fine.
 
-To mimic Helm behaviour `--unsafe-ignore-missing-keys` option.
+To mimic Helm behaviour regarding to missing keys use `--unsafe-ignore-missing-keys` option.
 
 There is no plan to implement full compatibility with Helm, because of unnecessary complexity that would bring.
 
