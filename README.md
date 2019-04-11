@@ -14,10 +14,10 @@ Just some of the things to `render`:
 - Infrastructure as Code files (e.g. CloudFormation templates)
 - Kubernetes manifests
 
-The renderer extends 
-[go-template](https://golang.org/pkg/text/template/) and [Sprig](http://masterminds.github.io/sprig/) functions. 
+The renderer extends
+[go-template](https://golang.org/pkg/text/template/) and [Sprig](http://masterminds.github.io/sprig/) functions.
 
-If you are interested in one of the use cases, take a look at this [blog post](https://medium.com/virtuslab/helm-alternative-d6568aa9d40b) 
+If you are interested in one of the use cases, take a look at this [blog post](https://medium.com/virtuslab/helm-alternative-d6568aa9d40b)
 about Kubernetes resources rendering. Also see [Helm compatibility](README.md#helm-compatibility).
 
 * [Installation](README.md#installation)
@@ -39,13 +39,17 @@ about Kubernetes resources rendering. Also see [Helm compatibility](README.md#he
 
 For binaries please visit the [Releases Page](https://github.com/VirtusLab/render/releases).
 
-The binaries are statically compiled and does not require any dependencies. 
+The binaries are statically compiled and does not require any dependencies.
 
 #### Via Go
 
 ```console
 $ go get github.com/VirtusLab/render
 ```
+
+#### kubectl command
+
+Place the `kubectl-render_apply` script somewhere in your path and kubectl will automatically find it.
 
 ## Usage
 
@@ -101,6 +105,10 @@ $ ./render --in test.txt.tmpl --out test.txt --config test.config.yaml
 $ cat test.txt
 something new
 ```
+Example usage of `render-apply` with `--in` and `--config`:
+```console
+$ kubectl render-apply --in deployment.yaml.tmpl --config deployment.config.yaml
+```
 
 Also see a [more advanced template](examples/example.yaml.tmpl) example.
 
@@ -149,7 +157,7 @@ All syntax and functions:
 - `toYaml` - provides a configuration data structure fragment as a YAML format
 - `gzip`, `ungzip` - use `gzip` compression and extraction inside the templates, for best results use with `b64enc` and `b64dec`
 
-See also [example](examples/example.yaml.tmpl) template 
+See also [example](examples/example.yaml.tmpl) template
 and a more [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).
 
 Cloud KMS (AWS, Amazon, Google) based cryptography functions form [`crypt`](https://github.com/VirtusLab/crypt):
@@ -180,19 +188,19 @@ We provide cross-compiled binaries for most platforms, but is currently used mai
 
 ## Contribution
 
-Feel free to file [issues](https://github.com/VirtusLab/render/issues) 
+Feel free to file [issues](https://github.com/VirtusLab/render/issues)
 or [pull requests](https://github.com/VirtusLab/render/pulls).
 
 ## Development
 
     export GOPATH=$HOME/go
     export PATH=$PATH:$GOPATH/bin
-    
+
     mkdir -p $GOPATH/src/github.com/VirtusLab
     cd $GOPATH/src/github.com/VirtusLab/render
     git clone git@github.com:VirtusLab/render.git
     cd render
-    
+
     go get -u github.com/golang/dep/cmd/dep
     make all
 

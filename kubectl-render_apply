@@ -1,0 +1,110 @@
+#!/bin/bash
+
+read -d '' usage <<EOF
+NAME:
+   render-apply - Render a template and apply to Kubernetes cluster
+
+USAGE:
+   render-apply [arguments...]
+
+VERSION:
+   v0.1.2-86eb03f
+
+AUTHOR:
+   VirtusLab
+
+COMMANDS:
+
+GLOBAL OPTIONS:
+   --in value                    the input template file, stdin if empty
+   --config value                optional configuration YAML file, can be used multiple times
+   --set value, --var value      additional parameters in key=value format, can be used multiple times
+   --unsafe-ignore-missing-keys  do not fail on missing map key and print '<no value>' ('missingkey=invalid')
+   --help, -h                    show help
+   --version, -v                 print the version
+   --dryrun                      print what arguments will be sent to render, then the formatted file
+EOF
+
+setvalues=""
+
+until [  $# -eq 0 ]; do
+  case $1 in
+  '--in')
+    if [ -z $2 ]; then
+      echo $usage
+      exit
+    elif [ ! -f $2 ]; then
+      echo "file '$2' not found"
+      exit
+    fi
+    in=$2
+    shift 2
+    ;;
+  '--config')
+    if [ -z $2 ]; then
+      echo $usage
+      exit
+    elif [ ! -f $2 ]; then
+      echo "file '$2' not found"
+      exit
+    fi
+    config=$2
+    shift 2
+    ;;
+  '--var') ;&
+  '--set')
+    setvalues="$setvalues $2"
+    shift 2
+    ;;
+  '--unsafe-ignore-missing-keys')
+    unsafe=true
+    shift 1
+    ;;
+  '--dryrun')
+    dryrun=true
+    shift 1
+    ;;
+  '-v') ;&
+  '--version')
+    render --version
+    exit
+    ;;
+  '-h') ;&
+  '--help') ;&
+  *)
+    echo "$usage"
+    exit
+  esac
+done
+
+args=""
+if [ $unsafe ]; then
+  args="$args --unsafe-ignore-missing-keys"
+fi
+
+if [ ! -z $in ]; then
+  if [ ! -f $in ]; then
+    echo "$in is not a file"
+    exit
+  fi
+  args="$args --in $in"
+fi
+
+if [ ! -z $config ]; then
+  if [ ! -f $config ]; then
+    echo "$config is not a file"
+    exit
+  fi
+  args="$args --config $config"
+fi
+
+for var in $setvalues; do
+  args="$args --var $var"
+done
+
+if [ $dryrun ]; then
+  echo "$args"
+  cat <(render $args)
+else
+  kubectl apply -f <(render $args)
+fi
