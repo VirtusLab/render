@@ -168,6 +168,8 @@ To mimic Helm behaviour `--unsafe-ignore-missing-keys` option.
 
 There is no plan to implement full compatibility with Helm, because of unnecessary complexity that would bring.
 
+If you need full Helm compatilble rendering see: [`helm-nomagic`](https://github.com/giantswarm/helm-nomagic).
+
 ## Limitations and future work
 
 #### Planned new features
