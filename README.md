@@ -174,7 +174,7 @@ If you need full Helm compatilble rendering see: [`helm-nomagic`](https://github
 
 #### Planned new features
 
-- `.renderignore` files #12
+- `.renderignore` files [`#12`](https://github.com/VirtusLab/render/issues/12)
 
 #### Operating system support
 
