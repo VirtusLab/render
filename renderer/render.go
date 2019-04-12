@@ -122,7 +122,7 @@ var defaultTemplateExtensions = []string{".tpl", ".tmpl"}
 
 // DirRender is used to render files by directory, see also FileRender
 func (r *renderer) DirRender(inputDir, outputDir string) error {
-	logrus.Infof("Directory mode selected")
+	logrus.Infof("Directory mode selected: '%s' -> '%s'", inputDir, outputDir)
 
 	fileEntries, err := dirTree(inputDir)
 	if err != nil {
@@ -130,7 +130,7 @@ func (r *renderer) DirRender(inputDir, outputDir string) error {
 	}
 
 	for _, file := range fileEntries {
-		logrus.Infof("Processing '%s'", path.Join(file.path, file.name))
+		logrus.Debugf("Processing '%s'", path.Join(file.path, file.name))
 
 		target := trimExtension(file, defaultTemplateExtensions)
 
@@ -152,8 +152,6 @@ func (r *renderer) DirRender(inputDir, outputDir string) error {
 			return errors.Wrapf(err, "can't get file information for '%s'", target.path)
 		}
 
-		logrus.Infof("Rendering %s \n", path.Join(target.path, target.name))
-
 		err = r.FileRender(path.Join(file.path, file.name), path.Join(target.path, target.name))
 		if err != nil {
 			return errors.Wrap(err, "can't render a file")
@@ -165,6 +163,16 @@ func (r *renderer) DirRender(inputDir, outputDir string) error {
 
 // FileRender is used to render files by path, see also DirRender
 func (r *renderer) FileRender(inputPath, outputPath string) error {
+	inputName := inputPath
+	outputName := outputPath
+	if inputPath == "" {
+		inputName = "stdin"
+	}
+	if outputPath == "" {
+		outputName = "stdout"
+	}
+	logrus.Infof("Rendering '%s' -> '%s'\n", inputName, outputName)
+
 	input, err := files.ReadInput(inputPath)
 	if err != nil {
 		logrus.Debugf("Can't open the template: %v", err)
@@ -178,10 +186,13 @@ func (r *renderer) FileRender(inputPath, outputPath string) error {
 		templateName = inputPath
 	}
 
-	result, err := r.NamedRender(templateName, string(input))
+	inputString := string(input)
+	logrus.Debugf("%s: \n%s", inputName, inputString)
+	result, err := r.NamedRender(templateName, inputString)
 	if err != nil {
 		return err
 	}
+	logrus.Debugf("%s: \n%s", outputName, result)
 
 	err = files.WriteOutput(outputPath, []byte(result), 0644)
 	if err != nil {
