@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/VirtusLab/render/constants"
 	"github.com/VirtusLab/render/renderer"
@@ -127,12 +128,23 @@ func preload(c *cli.Context) error {
 	return nil
 }
 
-func action(_ *cli.Context) error {
+func action(c *cli.Context) error {
+	if c.NArg() > 0 {
+		return fmt.Errorf("have not expected any arguments, got %d", c.NArg())
+	}
+
 	opts := []string{config.MissingKeyErrorOption}
 	if unsafeIgnoreMissingKeys {
 		logrus.Warnf("You are using '--unsafe-ignore-missing-keys' and %s will use option '%s'",
 			app.Name, config.MissingKeyInvalidOption)
 		opts = []string{config.MissingKeyInvalidOption}
+	}
+
+	if len(configPaths) > 0 {
+		logrus.Infof("Configurations:\n\t%s", strings.Join(configPaths, "\n\t"))
+	}
+	if len(vars) > 0 {
+		logrus.Infof("Variables:\n\t%s", strings.Join(vars, "\n\t"))
 	}
 	params, err := parameters.All(configPaths, vars)
 	if err != nil {

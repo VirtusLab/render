@@ -23,6 +23,7 @@ profile.out
 # Temporary Files and Dependencies
 tmp
 cross
+examples/directory-test
 
 # go-fuzz
 renderer-fuzz.zip
