@@ -73,7 +73,7 @@
   version = "2.19.0"
 
 [[projects]]
-  digest = "1:7f3666bf1a0aaf311b89139c9f60b95033662baf06f781619370cc6666711557"
+  digest = "1:dbde44aff61c9f9ecd00935ba83df404865b8ee3519febbc8faa55b551cba8ae"
   name = "github.com/VirtusLab/crypt"
   packages = [
     "aws",
@@ -84,8 +84,8 @@
     "gcp",
   ]
   pruneopts = "UT"
-  revision = "6e1b08dafc37122599270697dbbe3e48b647d6f0"
-  version = "v0.0.5"
+  revision = "7cb31c74c4ba7aa86c44d4df04e28486240ddb05"
+  version = "v0.1.1"
 
 [[projects]]
   digest = "1:19c2644499bb53d2952d8c3d6bf816dc4445fb9f3b99fd649806d6033964272f"
