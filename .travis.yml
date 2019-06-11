@@ -11,10 +11,10 @@ before_install:
 - make init dep
 
 script:
-- make verify
+- make status verify
 
 before_deploy:
-- make release
+- make status release
 - echo "Deploying to GitHub releases ..."
 
 deploy:
