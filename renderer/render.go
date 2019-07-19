@@ -11,7 +11,7 @@ import (
 	"github.com/VirtusLab/render/renderer/parameters"
 
 	"github.com/Masterminds/sprig"
-	"github.com/VirtusLab/crypt/crypto"
+	crypto "github.com/VirtusLab/crypt/crypto/render"
 	"github.com/VirtusLab/go-extended/pkg/files"
 	base "github.com/VirtusLab/go-extended/pkg/renderer"
 	"github.com/VirtusLab/go-extended/pkg/renderer/config"
@@ -41,8 +41,9 @@ func New(configurators ...func(*config.Config)) Renderer {
 	}
 	r.Reconfigure(
 		WithMoreFunctions(template.FuncMap{
-			"render":   r.NestedRender,
-			"readFile": r.ReadFile,
+			"render":    r.NestedRender,
+			"readFile":  r.ReadFile,
+			"writeFile": r.WriteFile,
 		}),
 	)
 	return r
@@ -121,6 +122,7 @@ func MergeFunctions(dst *template.FuncMap, src template.FuncMap) error {
 var defaultTemplateExtensions = []string{".tpl", ".tmpl"}
 
 // DirRender is used to render files by directory, see also FileRender
+// TODO break up to multiple small functions
 func (r *renderer) DirRender(inputDir, outputDir string) error {
 	logrus.Infof("Directory mode selected: '%s' -> '%s'", inputDir, outputDir)
 
@@ -227,9 +229,12 @@ ExtraFunctions provides additional template functions to the standard (text/temp
 */
 func ExtraFunctions() template.FuncMap {
 	return template.FuncMap{
-		"toYaml": ToYaml,
-		"ungzip": Ungzip,
-		"gzip":   Gzip,
+		"toYaml":   ToYAML,
+		"fromYaml": FromYAML,
+		"fromJson": FromJSON,
+		"jsonPath": JSONPath,
+		"ungzip":   Ungzip,
+		"gzip":     Gzip,
 	}
 }
 

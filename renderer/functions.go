@@ -5,14 +5,20 @@ import (
 	"compress/gzip"
 	"io"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 
 	"github.com/VirtusLab/render/renderer/parameters"
 
 	"github.com/VirtusLab/go-extended/pkg/files"
-	"github.com/ghodss/yaml"
+	json2 "github.com/VirtusLab/go-extended/pkg/json"
+	"github.com/VirtusLab/go-extended/pkg/jsonpath"
+	yaml2 "github.com/VirtusLab/go-extended/pkg/yaml"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 )
 
 func (r *renderer) root() (string, error) {
@@ -66,7 +72,7 @@ func (r *renderer) NestedRender(args ...interface{}) (string, error) {
 	).Render(template)
 }
 
-// ReadFile is a template function that allows for an in-template file opening
+// ReadFile is a template function that allows for an in-template file reading.
 // It takes a file path argument, the path can be absolute
 // or relative to the process working directory.
 // The relative path root can be changed with a parameter parameter.RootKey
@@ -87,10 +93,60 @@ func (r *renderer) ReadFile(file string) (string, error) {
 	return string(bs), nil
 }
 
-// ToYaml is a template function, it turns a marshallable structure into a YAML fragment
-func ToYaml(marshallable interface{}) (string, error) {
+// WriteFile is a template function that allows for an in-template file writing.
+// It takes a file path and content arguments, the path can be absolute
+// or relative to the process working directory.
+// The relative path root can be changed with a parameter parameter.RootKey
+func (r *renderer) WriteFile(file string, content string) (string, error) {
+	root, err := r.root()
+	if err != nil {
+		return file, err
+	}
+	absPath, err := files.ToAbsPath(file, root)
+	if err != nil {
+		return file, err
+	}
+	err = os.MkdirAll(filepath.Dir(absPath), 0755)
+	if err != nil {
+		return file, err
+	}
+	return file, ioutil.WriteFile(absPath, []byte(content), 0644)
+}
+
+// ToYAML is a template function, it turns a marshallable structure into a YAML fragment
+func ToYAML(marshallable interface{}) (string, error) {
+	logrus.Debug("marshallable: ", marshallable)
 	marshaledYaml, err := yaml.Marshal(marshallable)
 	return string(marshaledYaml), err
+}
+
+// FromYAML is a template function, that unmarshalls YAML string to a map
+func FromYAML(unmarshallable string) (interface{}, error) {
+	logrus.Debug("unmarshallable: ", unmarshallable)
+	result, err := yaml2.ToInterface(strings.NewReader(unmarshallable))
+	logrus.Debugf("result: %s (type: %s)", result, reflect.TypeOf(result))
+	return result, err
+}
+
+// FromJSON is a template function, that unmarshalls JSON string to a map
+func FromJSON(unmarshallable string) (interface{}, error) {
+	logrus.Debug("unmarshallable: ", unmarshallable)
+	result, err := json2.ToInterface(strings.NewReader(unmarshallable))
+	logrus.Debug("result: ", result)
+	return result, err
+}
+
+// JSONPath is a template function, that evaluates JSONPath expression
+// against a data structure and returns a list of results
+func JSONPath(expression string, marshallable interface{}) (interface{}, error) {
+	logrus.Debug("expression: ", expression)
+	logrus.Debugf("marshallable: %s (type: %s, kind: %s)",
+		marshallable, reflect.TypeOf(marshallable), reflect.ValueOf(marshallable).Kind())
+
+	final, err := jsonpath.New(expression).ExecuteToInterface(marshallable)
+	logrus.Debugf("final: %s (type: %s, kind: %s)",
+		final, reflect.TypeOf(final), reflect.ValueOf(final).Kind())
+	return final, err
 }
 
 // Gzip compresses the input using gzip algorithm
@@ -139,6 +195,7 @@ func Ungzip(input interface{}) (string, error) {
 	return out.String(), nil
 }
 
+// asBytes ensures input will be []byte if is string
 func asBytes(input interface{}) ([]byte, error) {
 	switch input := input.(type) {
 	case []byte:

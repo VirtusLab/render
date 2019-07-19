@@ -171,24 +171,27 @@ func action(c *cli.Context) error {
 		}
 
 		err = r.DirRender(inputDir, outputDir)
-		if err != nil {
-			return err
-		}
-	} else {
-		if len(inputDir) > 0 {
-			return fmt.Errorf("conflict, --indir can't be used with --in or --out")
-		}
-		if len(outputDir) > 0 {
-			return fmt.Errorf("conflict, --outdir can't be used with --in or --out")
-		}
-		err = r.FileRender(inputFile, outputFile)
-		if err != nil {
-			if err == files.ErrExpectedStdin {
-				return fmt.Errorf("expected either stdin, --indir or --in parameter, for usage use --help")
-			}
+		switch err.(type) {
+		case nil:
+			return nil
+		default:
 			return err
 		}
 	}
 
-	return nil
+	if len(inputDir) > 0 {
+		return fmt.Errorf("conflict, --indir can't be used with --in or --out")
+	}
+	if len(outputDir) > 0 {
+		return fmt.Errorf("conflict, --outdir can't be used with --in or --out")
+	}
+	err = r.FileRender(inputFile, outputFile)
+	switch err.(type) {
+	case nil:
+		return nil
+	case *files.ErrExpectedStdin:
+		return fmt.Errorf("expected either stdin, --indir or --in parameter, for usage use --help")
+	default:
+		return err
+	}
 }

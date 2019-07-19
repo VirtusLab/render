@@ -144,10 +144,14 @@ All syntax and functions:
 #### Custom functions
 
 - `render` - calls the `render` from inside of the template, making the renderer recursive (also accepts an optional template parameters override)
-- `readFile` - reads a file from a path, relative paths are translated to absolute paths, based on `root` function
-- `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
 - `toYaml` - provides a configuration data structure fragment as a YAML format
+- `fromYaml` - marshalls YAML data to a data structure (supports multi-documents)
+- `fromJson` - marshalls JSON data to a data structure
+- `jsonPath` - provides data structure manipulation with JSONPath (`kubectl` dialect)
 - `gzip`, `ungzip` - use `gzip` compression and extraction inside the templates, for best results use with `b64enc` and `b64dec`
+- `readFile` - reads a file from a path, relative paths are translated to absolute paths, based on `root` function or property
+- `writeFile` - writes a file to a path, relative paths are translated to absolute paths, based on `root` function or property
+- `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
 
 See also [example](examples/example.yaml.tmpl) template 
 and a more [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).

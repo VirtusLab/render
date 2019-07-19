@@ -29,7 +29,6 @@
   go-tests = true
   unused-packages = true
 
-
 [[constraint]]
   name = "github.com/ghodss/yaml"
   version = "1.0.0"
@@ -40,8 +39,8 @@
 
 [[constraint]]
   name = "github.com/VirtusLab/crypt"
-  version = "v0.1.1"
+  version = "v0.2.1"
 
 [[constraint]]
   name = "github.com/VirtusLab/go-extended"
-  version = "v0.0.4"
+  version = "v0.0.10"
