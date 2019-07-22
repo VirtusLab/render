@@ -208,3 +208,35 @@ data:
 	// Hello World!
 	// Witaj Świecie!
 }
+
+func ExampleN_simple() {
+	tmpl := `
+{{ range $i := n 0 10 }}{{ $i }} {{ end }}
+`
+	result, err := renderer.New(
+		renderer.WithExtraFunctions(),
+	).Render(tmpl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+
+	// Output:
+	// 0 1 2 3 4 5 6 7 8 9 10
+}
+
+func ExampleN_empty() {
+	tmpl := `
+{{ range $i := n 0 0 }}{{ $i }} {{ end }}
+`
+	result, err := renderer.New(
+		renderer.WithExtraFunctions(),
+	).Render(tmpl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+
+	// Output:
+	// 0
+}

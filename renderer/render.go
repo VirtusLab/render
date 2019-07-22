@@ -219,16 +219,11 @@ func (r *renderer) String() string {
 	return fmt.Sprintf("%+v", r.Renderer.Configuration())
 }
 
-/*
-ExtraFunctions provides additional template functions to the standard (text/template) ones:
-
-  - toYaml - provides a configuration data structure fragment as a YAML format
-  - gzip - use gzip compression inside the templates, for best results use with b64enc
-  - ungzip - use gzip extraction inside the templates, for best results use with b64dec
-
-*/
+// ExtraFunctions provides additional template functions
+// to the standard (text/template) ones
 func ExtraFunctions() template.FuncMap {
 	return template.FuncMap{
+		"n":        N,
 		"toYaml":   ToYAML,
 		"fromYaml": FromYAML,
 		"fromJson": FromJSON,

@@ -72,6 +72,15 @@ func (r *renderer) NestedRender(args ...interface{}) (string, error) {
 	).Render(template)
 }
 
+// N returns a slice of integers form the given start to end (inclusive)
+func N(start, end int) []int {
+	var result []int
+	for i := start; i <= end; i++ {
+		result = append(result, i)
+	}
+	return result
+}
+
 // ReadFile is a template function that allows for an in-template file reading.
 // It takes a file path argument, the path can be absolute
 // or relative to the process working directory.
