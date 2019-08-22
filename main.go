@@ -40,6 +40,10 @@ func main() {
 			Name:  "debug, d",
 			Usage: "run in debug mode",
 		},
+		cli.BoolFlag{
+			Name:  "silent, s",
+			Usage: "run in silent mode",
+		},
 		cli.StringFlag{
 			Name:        "indir",
 			Value:       "",
@@ -107,8 +111,13 @@ func main() {
 }
 
 func preload(c *cli.Context) error {
+	if c.GlobalBool("silent") {
+		logrus.SetLevel(logrus.FatalLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
+
 	logrus.SetFormatter(&logrus.TextFormatter{DisableTimestamp: true})
-	logrus.SetLevel(logrus.InfoLevel)
 	logrus.Infof("Version %s", app.Version)
 
 	if c.GlobalBool("debug") {

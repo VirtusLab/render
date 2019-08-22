@@ -67,15 +67,19 @@ func run(args ...string) (stdout, stderr string, err error) {
 	return runStdin(nil, args...)
 }
 
-func runStdin(stdin *string, args ...string) (stdout, stderr string, err error) {
-	prog := "./" + testBinaryName + exeSuffix
+func runStdinDebug(stdin *string, args ...string) (stdout, stderr string, err error) {
 	// always add debug flag
 	newargs := append([]string{"-d"}, args...)
+	return runStdin(stdin, newargs...)
+}
+
+func runStdin(stdin *string, args ...string) (stdout, stderr string, err error) {
 	ctx, cancel := context.WithTimeout(context.TODO(), killIn)
 	defer cancel()
 
-	fmt.Printf("$ %s %s\n\n", prog, strings.Join(newargs, " "))
-	stdout, stderr, err = sh(ctx, stdin, prog, newargs...)
+	prog := "./" + testBinaryName + exeSuffix
+	fmt.Printf("$ %s %s\n\n", prog, strings.Join(args, " "))
+	stdout, stderr, err = sh(ctx, stdin, prog, args...)
 	fmt.Printf("stdout:\n%s\n\n", stdout)
 	fmt.Printf("stderr:\n%s\n\n", stderr)
 
@@ -212,7 +216,7 @@ func TestMissingKeyInvalid(t *testing.T) {
 
 func TestVars(t *testing.T) {
 	stdin := `{{ .first }} {{ .second }} {{ .third.nested }}`
-	stdout, _, err := runStdin(&stdin,
+	stdout, _, err := runStdinDebug(&stdin,
 		"--var", "first=value1",
 		"--var", `second="value 2"`,
 		"--var", "third.nested='and value 3'",
@@ -220,6 +224,19 @@ func TestVars(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, "value1 value 2 and value 3", stdout)
+}
+
+func TestSilentMode(t *testing.T) {
+	stdin := `{{ .first }} {{ .second }} {{ .third.nested }}`
+	stdout, stderr, err := runStdin(&stdin, "-s",
+		"--var", "first=value1",
+		"--var", `second="value 2"`,
+		"--var", "third.nested='and value 3'",
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "value1 value 2 and value 3", stdout)
+	assert.Equal(t, "", stderr)
 }
 
 func TestNestedRenderOverride(t *testing.T) {
