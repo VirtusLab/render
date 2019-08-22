@@ -231,6 +231,22 @@ func TestNestedRenderOverride(t *testing.T) {
 	assert.Equal(t, "key: other", stdout)
 }
 
+func TestEmptyConfigFlag(t *testing.T) {
+	stdin := ""
+	_, _, err := runStdin(&stdin,
+		"--config", "--config", "examples/example.config.yaml")
+
+	assert.Error(t, err)
+}
+
+func TestEmptyVarFlag(t *testing.T) {
+	stdin := ""
+	_, _, err := runStdin(&stdin,
+		"--var", "--var", "key=value")
+
+	assert.Error(t, err)
+}
+
 func TestRegression_11(t *testing.T) {
 	t.Run("regression #11", func(t *testing.T) {
 		stdin := `apiVersion: v1

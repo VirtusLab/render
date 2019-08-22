@@ -129,10 +129,6 @@ func preload(c *cli.Context) error {
 }
 
 func action(c *cli.Context) error {
-	if c.NArg() > 0 {
-		return fmt.Errorf("have not expected any arguments, got %d", c.NArg())
-	}
-
 	opts := []string{config.MissingKeyErrorOption}
 	if unsafeIgnoreMissingKeys {
 		logrus.Warnf("You are using '--unsafe-ignore-missing-keys' and %s will use option '%s'",
@@ -159,6 +155,10 @@ func action(c *cli.Context) error {
 		renderer.WithCryptFunctions(),
 	)
 
+	// check for extra args after vars and configs were parsed to avoid confusing error messages
+	if c.NArg() > 0 {
+		return fmt.Errorf("have not expected any arguments, got %d", c.NArg())
+	}
 	if len(inputDir) > 0 {
 		if len(inputFile) > 0 {
 			return fmt.Errorf("conflict, --in can't be used with --indir or --outdir")
