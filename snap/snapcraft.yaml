@@ -1,0 +1,35 @@
+name: render
+base: core18
+version: 'v0.1.6'
+summary: Universal data-driven templates for generating textual output.
+description: |
+  Universal data-driven templates for generating textual output. Can be used as a single static binary (no dependencies) or as a golang library.
+  Just some of the things to render:
+  - configuration files
+  - Infrastructure as Code files (e.g. CloudFormation templates)
+  - Kubernetes manifests
+  The renderer extends go-template and Sprig functions.
+
+grade: stable
+confinement: devmode
+
+apps:
+  render:
+    command: render
+
+architectures:
+- build-on: amd64
+- build-on: i386
+- build-on: armhf
+- build-on: arm64
+
+parts:
+  render:
+    plugin: dump
+    source:
+    - on amd64: https://github.com/VirtusLab/render/releases/download/$SNAPCRAFT_PROJECT_VERSION/render-linux-amd64.tar.gz
+    - on i386: https://github.com/VirtusLab/render/releases/download/$SNAPCRAFT_PROJECT_VERSION/render-linux-386.tar.gz
+    - on armhf: https://github.com/VirtusLab/render/releases/download/$SNAPCRAFT_PROJECT_VERSION/render-linux-arm.tar.gz
+    - on arm64: https://github.com/VirtusLab/render/releases/download/$SNAPCRAFT_PROJECT_VERSION/render-linux-arm64.tar.gz
+    stage:
+    - render
