@@ -29,33 +29,43 @@ deploy:
   - cross/render-darwin-amd64
   - cross/render-darwin-amd64.md5
   - cross/render-darwin-amd64.sha256
+  - cross/render-darwin-amd64.tar.gz
   - cross/render-darwin-386
   - cross/render-darwin-386.md5
   - cross/render-darwin-386.sha256
+  - cross/render-darwin-386.tar.gz
   - cross/render-freebsd-amd64
   - cross/render-freebsd-amd64.md5
   - cross/render-freebsd-amd64.sha256
+  - cross/render-freebsd-amd64.tar.gz
   - cross/render-freebsd-386
   - cross/render-freebsd-386.md5
   - cross/render-freebsd-386.sha256
+  - cross/render-freebsd-386.tar.gz
   - cross/render-linux-arm
   - cross/render-linux-arm.md5
   - cross/render-linux-arm.sha256
+  - cross/render-linux-arm.tar.gz
   - cross/render-linux-arm64
   - cross/render-linux-arm64.md5
   - cross/render-linux-arm64.sha256
+  - cross/render-linux-arm64.tar.gz
   - cross/render-linux-amd64
   - cross/render-linux-amd64.md5
   - cross/render-linux-amd64.sha256
+  - cross/render-linux-amd64.tar.gz
   - cross/render-linux-386
   - cross/render-linux-386.md5
   - cross/render-linux-386.sha256
+  - cross/render-linux-386.tar.gz
   - cross/render-windows-amd64
   - cross/render-windows-amd64.md5
   - cross/render-windows-amd64.sha256
+  - cross/render-windows-amd64.tar.gz
   - cross/render-windows-386
   - cross/render-windows-386.md5
   - cross/render-windows-386.sha256
+  - cross/render-windows-386.tar.gz
 
 cache:
   directories:
