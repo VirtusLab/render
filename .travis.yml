@@ -69,4 +69,8 @@ deploy:
 
 cache:
   directories:
-    - vendor
+  - vendor
+
+notifications:
+  slack:
+    secure: SDPUVbLgg9uye/9JRpjVLz/6Y9ykxVlGSpxDy3S8fBUOfjrp9MMe+yCnfAqphRNBGIo4DJQ40Ds/2DQPbCXHqJZcbvloEK0vxTghpFXkGZF7CLo/oy1yjfo4ezoCAxjuFgb6Af/uvO99Us07dp1LldzJxlI6bgPpI/1AWwKl+Ilv1f9ngQ0mzv1EZiwTbJsRdtgYa+qKcYVl040wZK3xy/6gZPx9JY8rh2nPY1ztbiVwvSicSb7O07Da7/e+T1HzlQ02JPNE0hh9gwRgUifPZ4p70vRdKLfHNevq+4k4Ws7P1eVJv+qCfHWIGikFSRzNpHO/X8kROERLtH4PGRHfgWXhcISWpLLr1GWlhO+hBRNCRIskBbuwd/z1WLLwuzeNpbC/a5Up3H2M4hIoYahC0GDd4C8w9oChrS+5PIKzdK6Y8Rx9royxiRudR7WZKBGT2t3u1d3DYpQ5q+iPKZ19Q5DLrJ4BbyjAZeh4rytr3OBkX1fNAe1RiNJdzPAz9R8CLSbEvYSEZsfGsBCuBzxhFgavOSYYeN3H/Ilh3wwmgYjiReIqztvGVaRATg+HAWCRWkh+QHj6KfOuvBJONzSNnAyXo8WuWSSe7d060ne912WbVOrnE+79/I6iA4r4oPN8QuWaI7yzIEnOMPcp3J9/WxJhZiOl4oePWAYXy55VntQ=
