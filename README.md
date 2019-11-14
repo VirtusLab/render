@@ -21,8 +21,8 @@ If you are interested in one of the use cases, take a look at this [blog post](h
 about Kubernetes resources rendering. Also see [Helm compatibility](README.md#helm-compatibility).
 
 * [Installation](README.md#installation)
-  * [Binaries](README.md#binaries)
-  * [Via Go](README.md#via-go)
+  * [Official binary releases](README.md#official-binary-releases)
+  * [Compile from master via Go get](README.md#compile-from-master-via-go-get)
 * [Usage](README.md#usage)
   * [Command line](README.md#command-line)
   * [Notable standard and sprig functions](README.md#notable-standard-and-sprig-functions)
@@ -35,17 +35,19 @@ about Kubernetes resources rendering. Also see [Helm compatibility](README.md#he
 
 ## Installation
 
-#### Binaries
+#### Official binary releases
 
 For binaries please visit the [Releases Page](https://github.com/VirtusLab/render/releases).
 
 The binaries are statically compiled and does not require any dependencies. 
 
-#### Via Go
+#### Compile from master via Go get
 
 ```console
 $ go get github.com/VirtusLab/render
 ```
+
+Note: [issue #15](https://github.com/VirtusLab/render/issues/15)
 
 ## Usage
 
