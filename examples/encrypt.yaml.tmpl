@@ -1,2 +1,0 @@
-encryptedWithAWS: {{ encryptAWS "alias/test" "eu-west-1" "plaintext" | gzip | b64enc }}
-encryptedWithGCP: {{ encryptGCP "lunar-compiler-221314" "global" "test" "quickstart" "plaintext" | gzip | b64enc }}
