@@ -187,10 +187,14 @@ If you need full Helm compatilble rendering see: [`helm-nomagic`](https://github
 
 We provide cross-compiled binaries for most platforms, but is currently used mainly with `linux/amd64`.
 
-## Contribution
+## Community & Contribution
+
+There is a dedicated channel `#jenkins-operator` on [virtuslab-oss.slack.com](https://virtuslab-oss.slack.com) ([Invite form](https://forms.gle/X3X8qA1XMirdBuEH7))
 
 Feel free to file [issues](https://github.com/VirtusLab/render/issues) 
 or [pull requests](https://github.com/VirtusLab/render/pulls).
+
+Before any big pull request please consult the maintainers to ensure a common direction.
 
 ## Development
 
