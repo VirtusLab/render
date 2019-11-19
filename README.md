@@ -189,7 +189,7 @@ We provide cross-compiled binaries for most platforms, but is currently used mai
 
 ## Community & Contribution
 
-There is a dedicated channel `#jenkins-operator` on [virtuslab-oss.slack.com](https://virtuslab-oss.slack.com) ([Invite form](https://forms.gle/X3X8qA1XMirdBuEH7))
+There is a dedicated channel `#render` on [virtuslab-oss.slack.com](https://virtuslab-oss.slack.com) ([Invite form](https://forms.gle/X3X8qA1XMirdBuEH7))
 
 Feel free to file [issues](https://github.com/VirtusLab/render/issues) 
 or [pull requests](https://github.com/VirtusLab/render/pulls).
