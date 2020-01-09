@@ -6,6 +6,9 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/VirtusLab/render "Go Report Card")](https://goreportcard.com/report/github.com/VirtusLab/render)
 [![GoDoc](https://godoc.org/github.com/VirtusLab/render?status.svg "GoDoc Documentation")](https://godoc.org/github.com/VirtusLab/render/renderer)
 
+
+![logo](/assets/render_typo.png)
+
 Universal data-driven templates for generating textual output. Can be used as a single static binary (no dependencies)
 or as a golang library.
 
