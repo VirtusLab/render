@@ -39,7 +39,7 @@
 
 [[constraint]]
   name = "github.com/VirtusLab/crypt"
-  version = "v0.2.1"
+  version = "v0.2.5"
 
 [[constraint]]
   name = "github.com/VirtusLab/go-extended"
