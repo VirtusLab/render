@@ -31,3 +31,6 @@ workdir
 
 # IDE
 .idea
+
+# Go modules
+go.sum

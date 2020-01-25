@@ -46,22 +46,34 @@ ARGS ?= $(EXTRA_ARGS)
 .DEFAULT_GOAL := help
 
 .PHONY: all
-all: clean dep verify build install ## Test, build, install
+all: clean dependencies verify build install ## Test, build, install
 	@echo "+ $@"
 
 .PHONY: init
-init: ## Initializes this Makefile dependencies: dep, golint, staticcheck, checkmake
+HAS_GOLINT := $(shell which golint)
+HAS_GOIMPORTS := $(shell which goimports)
+HAS_CHECKMAKE := $(shell which checkmake)
+HAS_STATICCHECK := $(shell which staticcheck)
+init: ## Initializes this Makefile dependencies: golint, staticcheck, checkmake
 	@echo "+ $@"
-	go get -u github.com/golang/dep/cmd/dep
+ifndef HAS_GOLINT
 	go get -u golang.org/x/lint/golint
+endif
+ifndef HAS_STATICCHECK
 	go get -u honnef.co/go/tools/cmd/staticcheck
+endif
+ifndef HAS_GOIMPORTS
 	go get -u golang.org/x/tools/cmd/goimports
+endif
+ifndef HAS_CHECKMAKE
 	go get -u github.com/mrtazz/checkmake
+endif
+	@echo "Initialized dependencies"
 
-.PHONY: dep
-dep: ## Populates the vendor directory with dependencies
+.PHONY: dependencies
+dependencies: ## Populates the vendor directory with dependencies
 	@echo "+ $@"
-	@dep ensure -v
+	go mod vendor -v
 
 .PHONY: build
 build: $(NAME) ## Builds a dynamic executable or package
