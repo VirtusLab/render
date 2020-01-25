@@ -235,5 +235,5 @@ ifneq ($(GITIGNOREDBUTTRACKEDCHANGES),)
 	@echo
 endif
 	@echo "Dependencies:"
-	@dep status
+	@go list -m all
 	@echo
