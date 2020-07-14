@@ -10,7 +10,7 @@ import (
 
 	"github.com/VirtusLab/render/renderer/parameters"
 
-	"github.com/Masterminds/sprig"
+	"github.com/Masterminds/sprig/v3"
 	crypto "github.com/VirtusLab/crypt/crypto/render"
 	"github.com/VirtusLab/go-extended/pkg/files"
 	base "github.com/VirtusLab/go-extended/pkg/renderer"
