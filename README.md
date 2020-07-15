@@ -43,14 +43,6 @@ For binaries please visit the [Releases Page](https://github.com/VirtusLab/rende
 
 The binaries are statically compiled and does not require any dependencies. 
 
-#### Compile from master via Go get
-
-```console
-$ go get github.com/VirtusLab/render
-```
-
-Note: [issue #15](https://github.com/VirtusLab/render/issues/15)
-
 ## Usage
 
 ```console
@@ -208,7 +200,6 @@ Before any big pull request please consult the maintainers to ensure a common di
     git clone git@github.com:VirtusLab/render.git
     cd render
     
-    go get -u github.com/golang/dep/cmd/dep
     make all
 
 ## The name
