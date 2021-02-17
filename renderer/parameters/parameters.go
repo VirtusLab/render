@@ -21,7 +21,7 @@ const (
 
 var (
 	// VarArgRegexp defines the extra variable parameter format
-	VarArgRegexp = matcher.Must(`^(?P<name>\S+)=(?P<value>[\S ]*)$`)
+	VarArgRegexp = matcher.Must(`^(?P<name>[^=]+)=(?P<value>[\S ]*)$`)
 )
 
 // Parameters is a map used to render the templates with
