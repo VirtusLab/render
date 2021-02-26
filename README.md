@@ -150,7 +150,7 @@ All syntax and functions:
 - `writeFile` - writes a file to a path, relative paths are translated to absolute paths, based on `root` function or property
 - `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
 
-See also [examples](exampless) and a more 
+See also [examples](examples) and a more 
 [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).
 
 Cloud KMS (AWS, Amazon, Google) based cryptography functions form [`crypt`](https://github.com/VirtusLab/crypt):
