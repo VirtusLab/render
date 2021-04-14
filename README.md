@@ -192,14 +192,10 @@ Before any big pull request please consult the maintainers to ensure a common di
 
 ## Development
 
-    export GOPATH=$HOME/go
-    export PATH=$PATH:$GOPATH/bin
-    
-    mkdir -p $GOPATH/src/github.com/VirtusLab
-    cd $GOPATH/src/github.com/VirtusLab/render
     git clone git@github.com:VirtusLab/render.git
     cd render
     
+    make init
     make all
 
 ## The name
