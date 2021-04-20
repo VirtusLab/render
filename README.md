@@ -24,7 +24,6 @@ about Kubernetes resources rendering. Also see [Helm compatibility](README.md#he
 
 * [Installation](README.md#installation)
   * [Official binary releases](README.md#official-binary-releases)
-  * [Compile from master via Go get](README.md#compile-from-master-via-go-get)
 * [Usage](README.md#usage)
   * [Command line](README.md#command-line)
   * [Notable standard and sprig functions](README.md#notable-standard-and-sprig-functions)
