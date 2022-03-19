@@ -3,14 +3,18 @@ package renderer
 import (
 	"bytes"
 	"compress/gzip"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"math/big"
+	"net"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 
 	"github.com/VirtusLab/render/renderer/parameters"
+	"github.com/apparentlymart/go-cidr/cidr"
 
 	"github.com/VirtusLab/go-extended/pkg/files"
 	json2 "github.com/VirtusLab/go-extended/pkg/json"
@@ -214,4 +218,119 @@ func asBytes(input interface{}) ([]byte, error) {
 	default:
 		return nil, errors.Errorf("expected []byte or string, got: '%v'", reflect.TypeOf(input))
 	}
+}
+
+// CidrHost calculates a full host IP address within a given IP network address prefix.
+func CidrHost(prefix string, hostnum int) (string, error) {
+	logrus.Debug("prefix: ", prefix)
+	logrus.Debug("hostnum: ", hostnum)
+
+	_, network, err := net.ParseCIDR(prefix)
+	if err != nil {
+		return "", err
+	}
+
+	ip, err := cidr.HostBig(network, big.NewInt(int64(hostnum)))
+	if err != nil {
+		return "", err
+	}
+
+	return ip.String(), nil
+}
+
+// CidrNetmask converts an IPv4 address prefix given in CIDR notation into a subnet mask address.
+func CidrNetmask(prefix string) (string, error) {
+	logrus.Debug("prefix: ", prefix)
+
+	_, network, err := net.ParseCIDR(prefix)
+	if err != nil {
+		return "", err
+	}
+
+	if len(network.IP) != net.IPv4len {
+		return "", fmt.Errorf("only IPv4 networks are supported")
+	}
+
+	return net.IP(network.Mask).String(), nil
+}
+
+// CidrSubnet calculates a subnet address within a given IP network address prefix.
+func CidrSubnet(prefix string, newbits, netnum int) (string, error) {
+	logrus.Debug("prefix: ", prefix)
+	logrus.Debug("newbits: ", newbits)
+	logrus.Debug("netnum: ", netnum)
+
+	_, network, err := net.ParseCIDR(prefix)
+	if err != nil {
+		return "", err
+	}
+
+	newNetwork, err := cidr.SubnetBig(network, newbits, big.NewInt(int64(netnum)))
+	if err != nil {
+		return "", err
+	}
+
+	return newNetwork.String(), nil
+}
+
+// CidrSubnets calculates a sequence of consecutive subnet prefixes that may
+// be of different prefix lengths under a common base prefix.
+func CidrSubnets(prefix string, newbits ...int) ([]string, error) {
+	logrus.Debug("prefix: ", prefix)
+	logrus.Debug("newbits: ", newbits)
+
+	if len(newbits) == 0 {
+		return nil, nil
+	}
+
+	_, network, err := net.ParseCIDR(prefix)
+	if err != nil {
+		return nil, err
+	}
+
+	startPrefixLen, _ := network.Mask.Size()
+	firstLength := newbits[0]
+
+	firstLength += startPrefixLen
+	retVals := make([]string, len(newbits))
+
+	current, _ := cidr.PreviousSubnet(network, firstLength)
+
+	for i, length := range newbits {
+		if length < 1 {
+			return nil, fmt.Errorf("must extend prefix by at least one bit")
+		}
+		// For portability with 32-bit systems where the subnet number
+		// will be a 32-bit int, we only allow extension of 32 bits in
+		// one call even if we're running on a 64-bit machine.
+		// (Of course, this is significant only for IPv6.)
+		if length > 32 {
+			return nil, fmt.Errorf("may not extend prefix by more than 32 bits")
+		}
+
+		length += startPrefixLen
+		if length > (len(network.IP) * 8) {
+			protocol := "IP"
+			switch len(network.IP) {
+			case net.IPv4len:
+				protocol = "IPv4"
+			case net.IPv6len:
+				protocol = "IPv6"
+			}
+			return nil, fmt.Errorf("would extend prefix to %d bits, which is too long for an %s address", length, protocol)
+		}
+
+		next, rollover := cidr.NextSubnet(current, length)
+		if rollover || !network.Contains(next.IP) {
+			// If we run out of suffix bits in the base CIDR prefix then
+			// NextSubnet will start incrementing the prefix bits, which
+			// we don't allow because it would then allocate addresses
+			// outside of the caller's given prefix.
+			return nil, fmt.Errorf("not enough remaining address space for a subnet with a prefix of %d bits after %s", length, current.String())
+		}
+		current = next
+		retVals[i] = current.String()
+	}
+
+	return retVals, nil
 }

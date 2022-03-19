@@ -162,6 +162,7 @@ func action(c *cli.Context) error {
 		renderer.WithSprigFunctions(),
 		renderer.WithExtraFunctions(),
 		renderer.WithCryptFunctions(),
+		renderer.WithNetFunctions(),
 	)
 
 	// check for extra args after vars and configs were parsed to avoid confusing error messages

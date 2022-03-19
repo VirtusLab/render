@@ -88,6 +88,8 @@ github.com/VirtusLab/crypt v0.2.6/go.mod h1:gR1pcGS9+4c5xTz+eXtN9Rls6ZmTqV0LOTCp
 github.com/VirtusLab/go-extended v0.0.11 h1:1m+C4YV4ujx/YeUjSTyxziKYc0QZnS68ZD3qu4y8Opo=
 github.com/VirtusLab/go-extended v0.0.11/go.mod h1:7eU6FdGOELNqTcxnyl05JH4HQGS6326PCURP4uzpR3c=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
+github.com/apparentlymart/go-cidr v1.1.0 h1:2mAhrMoF+nhXqxTzSZMUzDHkLjmIHC+Zzn4tdgBZjnU=
+github.com/apparentlymart/go-cidr v1.1.0/go.mod h1:EBcsNrHc3zQeuaeCeCtQruQm+n9/YjEn/vI25Lg7Gwc=
 github.com/aws/aws-sdk-go v1.43.17 h1:jDPBz1UuTxmyRo0eLgaRiro0fiI1zL7lkscqYxoEDLM=
 github.com/aws/aws-sdk-go v1.43.17/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

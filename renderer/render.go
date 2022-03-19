@@ -109,6 +109,11 @@ func WithCryptFunctions() func(*config.Config) {
 	return WithMoreFunctions(crypto.TemplateFunctions())
 }
 
+// WithNetFunctions mutates Renderer configuration by merging the custom template functions
+func WithNetFunctions() func(*config.Config) {
+	return WithMoreFunctions(NetFunctions())
+}
+
 // MergeFunctions merges two template.FuncMap instances, overrides if necessary
 func MergeFunctions(dst *template.FuncMap, src template.FuncMap) error {
 	err := mergo.Merge(dst, src, mergo.WithOverride)
@@ -230,6 +235,17 @@ func ExtraFunctions() template.FuncMap {
 		"jsonPath": JSONPath,
 		"ungzip":   Ungzip,
 		"gzip":     Gzip,
+	}
+}
+
+// NetFunctions provides additional template functions
+// to the standard (text/template) ones
+func NetFunctions() template.FuncMap {
+	return template.FuncMap{
+		"cidrhost":    CidrHost,
+		"cidrnetmask": CidrNetmask,
+		"cidrsubnet":  CidrSubnet,
+		"cidrsubnets": CidrSubnets,
 	}
 }
 

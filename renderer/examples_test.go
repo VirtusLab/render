@@ -240,3 +240,82 @@ func ExampleN_empty() {
 	// Output:
 	// 0
 }
+
+func ExampleCidrHost_simple() {
+	tmpl := `
+{{ cidrhost "10.12.127.0/20" 16 }}
+{{ cidrhost "10.12.127.0/20" 268 }}
+{{ cidrhost "fd00:fd12:3456:7890:00a2::/72" 34 }}
+`
+	result, err := renderer.New(
+		renderer.WithNetFunctions(),
+	).Render(tmpl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output:
+	// 10.12.112.16
+	// 10.12.113.12
+	// fd00:fd12:3456:7890::22
+}
+
+func ExampleCidrNetmask_simple() {
+	tmpl := `
+{{ cidrnetmask "10.0.0.0/12" }}
+`
+	result, err := renderer.New(
+		renderer.WithNetFunctions(),
+	).Render(tmpl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output:
+	// 255.240.0.0
+}
+
+func ExampleCidrSubnet_simple() {
+	tmpl := `
+{{ cidrsubnet "10.0.0.0/16" 2 0 }}
+{{ cidrsubnet "10.0.0.0/16" 2 1 }}
+{{ cidrsubnet "10.0.0.0/16" 3 5 }}
+`
+	result, err := renderer.New(
+		renderer.WithNetFunctions(),
+	).Render(tmpl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output:
+	// 10.0.0.0/18
+	// 10.0.64.0/18
+	// 10.0.160.0/19
+}
+
+func ExampleCidrSubnets_simple() {
+	tmpl := `
+{{ range $k, $v := cidrsubnets "10.1.0.0/16" 4 4 8 4 }}
+{{ $k }} {{ $v }}{{ end }}
+{{ range $k, $v := cidrsubnets "fd00:fd12:3456:7890::/56" 16 16 16 32 }}
+{{ $k }} {{ $v }}{{ end }}
+`
+	result, err := renderer.New(
+		renderer.WithNetFunctions(),
+	).Render(tmpl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output:
+	// 0 10.1.0.0/20
+	// 1 10.1.16.0/20
+	// 2 10.1.32.0/24
+	// 3 10.1.48.0/20
+	//
+	// 0 fd00:fd12:3456:7800::/72
+	// 1 fd00:fd12:3456:7800:100::/72
+	// 2 fd00:fd12:3456:7800:200::/72
+	// 3 fd00:fd12:3456:7800:300::/88
+}

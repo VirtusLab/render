@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/VirtusLab/crypt v0.2.6
 	github.com/VirtusLab/go-extended v0.0.11
+	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/imdario/mergo v0.3.12
 	github.com/pkg/errors v0.9.1
