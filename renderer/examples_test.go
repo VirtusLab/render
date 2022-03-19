@@ -243,9 +243,10 @@ func ExampleN_empty() {
 
 func ExampleCidrHost_simple() {
 	tmpl := `
-{{ cidrhost "10.12.127.0/20" 16 }}
-{{ cidrhost "10.12.127.0/20" 268 }}
-{{ cidrhost "fd00:fd12:3456:7890:00a2::/72" 34 }}
+{{ cidrHost 16 "10.12.127.0/20" }}
+{{ cidrHost 268 "10.12.127.0/20" }}
+{{ cidrHost 34 "fd00:fd12:3456:7890:00a2::/72" }}
+{{ "10.12.127.0/20" | cidrHost 16 }}
 `
 	result, err := renderer.New(
 		renderer.WithNetFunctions(),
@@ -258,11 +259,12 @@ func ExampleCidrHost_simple() {
 	// 10.12.112.16
 	// 10.12.113.12
 	// fd00:fd12:3456:7890::22
+	// 10.12.112.16
 }
 
 func ExampleCidrNetmask_simple() {
 	tmpl := `
-{{ cidrnetmask "10.0.0.0/12" }}
+{{ cidrNetmask "10.0.0.0/12" }}
 `
 	result, err := renderer.New(
 		renderer.WithNetFunctions(),
@@ -275,11 +277,12 @@ func ExampleCidrNetmask_simple() {
 	// 255.240.0.0
 }
 
-func ExampleCidrSubnet_simple() {
+func ExampleCidrSubnets_simple() {
 	tmpl := `
-{{ cidrsubnet "10.0.0.0/16" 2 0 }}
-{{ cidrsubnet "10.0.0.0/16" 2 1 }}
-{{ cidrsubnet "10.0.0.0/16" 3 5 }}
+{{ index (cidrSubnets 2 "10.0.0.0/16") 0 }}
+{{ index ("10.0.0.0/16" | cidrSubnets 2) 1 }}
+{{ range cidrSubnets 3 "10.0.0.0/16" }}
+{{ . }}{{ end }}
 `
 	result, err := renderer.New(
 		renderer.WithNetFunctions(),
@@ -291,14 +294,22 @@ func ExampleCidrSubnet_simple() {
 	// Output:
 	// 10.0.0.0/18
 	// 10.0.64.0/18
+	//
+	// 10.0.0.0/19
+	// 10.0.32.0/19
+	// 10.0.64.0/19
+	// 10.0.96.0/19
+	// 10.0.128.0/19
 	// 10.0.160.0/19
+	// 10.0.192.0/19
+	// 10.0.224.0/19
 }
 
-func ExampleCidrSubnets_simple() {
+func ExampleCidrSubnetSizes_simple() {
 	tmpl := `
-{{ range $k, $v := cidrsubnets "10.1.0.0/16" 4 4 8 4 }}
+{{ range $k, $v := cidrSubnetSizes 4 4 8 4 "10.1.0.0/16" }}
 {{ $k }} {{ $v }}{{ end }}
-{{ range $k, $v := cidrsubnets "fd00:fd12:3456:7890::/56" 16 16 16 32 }}
+{{ range $k, $v := cidrSubnetSizes 16 16 16 32 "fd00:fd12:3456:7890::/56" }}
 {{ $k }} {{ $v }}{{ end }}
 `
 	result, err := renderer.New(
