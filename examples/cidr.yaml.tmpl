@@ -1,0 +1,14 @@
+{{ cidrhost "10.12.127.0/20" 16 }}
+{{ cidrhost "10.12.127.0/20" 268 }}
+{{ cidrhost "fd00:fd12:3456:7890:00a2::/72" 34 }}
+
+{{ cidrnetmask "10.0.0.0/12" }}
+
+{{ cidrsubnet "10.0.0.0/16" 2 0 }}
+{{ cidrsubnet "10.0.0.0/16" 2 1 }}
+{{ cidrsubnet "10.0.0.0/16" 3 5 }}
+
+{{ range $k, $v := cidrsubnets "10.1.0.0/16" 4 4 8 4 }}
+{{ $k }} {{ $v }}{{ end }}
+{{ range $k, $v := cidrsubnets "fd00:fd12:3456:7890::/56" 16 16 16 32 }}
+{{ $k }} {{ $v }}{{ end }}
