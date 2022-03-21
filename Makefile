@@ -37,7 +37,7 @@ GO_LDFLAGS=-ldflags "-w $(CTIMEVAR)"
 GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 
 # List the GOOS and GOARCH to build
-GOOSARCHES = darwin/amd64 darwin/386 freebsd/amd64 freebsd/386 linux/arm linux/arm64 linux/amd64 linux/386 windows/amd64 windows/386
+GOOSARCHES = darwin/amd64 darwin/arm64 freebsd/amd64 freebsd/386 freebsd/arm freebsd/arm64 linux/arm linux/arm64 linux/amd64 linux/386 windows/amd64 windows/386 windows/arm windows/arm64
 
 PACKAGES = $(shell go list -f '{{.ImportPath}}/' ./... | grep -v vendor)
 
