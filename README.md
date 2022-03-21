@@ -1,6 +1,6 @@
 # render
 
-[![Version](https://img.shields.io/badge/version-v0.2.0-brightgreen.svg)](https://github.com/VirtusLab/render/releases/tag/v0.2.0)
+[![Version](https://img.shields.io/badge/version-v0.3.0-brightgreen.svg)](https://github.com/VirtusLab/render/releases/tag/v0.3.0)
 [![Travis CI](https://img.shields.io/travis/VirtusLab/render.svg)](https://travis-ci.org/VirtusLab/render)
 [![Github All Releases](https://img.shields.io/github/downloads/VirtusLab/render/total.svg)](https://github.com/VirtusLab/render/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/VirtusLab/render "Go Report Card")](https://goreportcard.com/report/github.com/VirtusLab/render)
@@ -53,7 +53,7 @@ USAGE:
    render [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.2.0-86eb03f
+   v0.3.0
 
 AUTHOR:
    VirtusLab
