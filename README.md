@@ -148,6 +148,10 @@ All syntax and functions:
 - `readFile` - reads a file from a path, relative paths are translated to absolute paths, based on `root` function or property
 - `writeFile` - writes a file to a path, relative paths are translated to absolute paths, based on `root` function or property
 - `root` - the root path, used for relative to absolute path translation in any file based operations; by default `PWD` is used
+- `cidrHost` - calculates a full host IP address for a given host number within a given IP network address prefix
+- `cidrNetmask` - converts an IPv4 address prefix given in CIDR notation into a subnet mask address
+- `cidrSubnets` - calculates a subnet address within given IP network address prefix
+- `cidrSubnetSizes` - calculates a sequence of consecutive IP address ranges within a particular CIDR prefix
 
 See also [examples](examples) and a more 
 [detailed documentation](https://godoc.org/github.com/VirtusLab/render/renderer#Renderer.ExtraFunctions).

@@ -1,0 +1,14 @@
+{{ cidrHost 16 "10.12.127.0/20" }}
+{{ cidrHost 268 "10.12.127.0/20" }}
+{{ "fd00:fd12:3456:7890:00a2::/72" | cidrHost 34 }}
+
+{{ cidrNetmask "10.0.0.0/12" }}
+
+{{ index (cidrSubnets 2 "10.0.0.0/16") 0 }}
+{{ index ("10.0.0.0/16" | cidrSubnets 2) 1 }}
+{{ index (cidrSubnets 3 "10.0.0.0/16") 5 }}
+
+{{ range $k, $v := cidrSubnetSizes 4 4 8 4 "10.1.0.0/16" }}
+{{ $k }} {{ $v }}{{ end }}
+{{ range $k, $v := cidrSubnetSizes 16 16 16 32 "fd00:fd12:3456:7890::/56" }}
+{{ $k }} {{ $v }}{{ end }}
