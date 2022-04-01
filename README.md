@@ -63,6 +63,7 @@ COMMANDS:
 
 GLOBAL OPTIONS:
    --debug, -d                   run in debug mode
+   --silent, -s                  run in silent mode
    --indir value                 the input directory, can't be used with --out
    --outdir value                the output directory, the same as --outdir if empty, can't be used with --in
    --in value                    the input template file, stdin if empty, can't be used with --outdir
