@@ -2,10 +2,10 @@
 {{ cidrHost 268 "10.12.127.0/20" }}
 {{ "fd00:fd12:3456:7890:00a2::/72" | cidrHost 34 }}
 
-{{ cidrHostEnd 0 "10.12.127.0/20" }}
-{{ cidrHostEnd 268 "10.12.127.0/20" }}
-{{ cidrHostEnd 34 "fd00:fd12:3456:7890:00a2::/72" }}
-{{ "10.12.127.0/20" | cidrHostEnd 16 }}
+{{ cidrHostEnd 1 "10.12.127.0/20" }}
+{{ cidrHostEnd 267 "10.12.127.0/20" }}
+{{ cidrHostEnd 33 "fd00:fd12:3456:7890:00a2::/72" }}
+{{ "10.12.127.0/20" | cidrHostEnd 15 }}
 
 {{ cidrNetmask "10.0.0.0/12" }}
 

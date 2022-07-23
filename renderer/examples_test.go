@@ -264,10 +264,10 @@ func ExampleCidrHost_simple() {
 
 func ExampleCidrHostEnd_simple() {
 	tmpl := `
-{{ cidrHostEnd 0 "10.12.127.0/20" }}
-{{ cidrHostEnd 268 "10.12.127.0/20" }}
-{{ cidrHostEnd 34 "fd00:fd12:3456:7890:00a2::/72" }}
-{{ "10.12.127.0/20" | cidrHostEnd 16 }}
+{{ cidrHostEnd 1 "10.12.127.0/20" }}
+{{ cidrHostEnd 267 "10.12.127.0/20" }}
+{{ cidrHostEnd 33 "fd00:fd12:3456:7890:00a2::/72" }}
+{{ "10.12.127.0/20" | cidrHostEnd 15 }}
 `
 	result, err := renderer.New(
 		renderer.WithNetFunctions(),
@@ -278,9 +278,10 @@ func ExampleCidrHostEnd_simple() {
 	fmt.Println(result)
 	// Output:
 	// 10.12.127.254
-	// 10.12.126.242
-	// fd00:fd12:3456:7890:ff:ffff:ffff:ffdc
-	// 10.12.127.238
+	// 10.12.126.244
+	// fd00:fd12:3456:7890:ff:ffff:ffff:ffde
+	// 10.12.127.240
+
 }
 
 func ExampleCidrNetmask_simple() {
