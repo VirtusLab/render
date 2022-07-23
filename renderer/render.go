@@ -243,6 +243,7 @@ func ExtraFunctions() template.FuncMap {
 func NetFunctions() template.FuncMap {
 	return template.FuncMap{
 		"cidrHost":        CidrHost,
+    "cidrHostEnd":     CidrHostEnd,
 		"cidrNetmask":     CidrNetmask,
 		"cidrSubnets":     CidrSubnets,
 		"cidrSubnetSizes": CidrSubnetSizes,

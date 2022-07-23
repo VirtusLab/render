@@ -255,6 +255,24 @@ func CidrHost(hostnum int, prefix interface{}) (*net.IP, error) {
 	return &ip, err
 }
 
+// CidrHostEnd calculates a full host IP address within a given IP network address prefix,
+// starting from the end of the addressable range (excludes broadcast), working backwards.
+// NOTE: this does not work with ipv6 ranges with a prefix smaller than /65.
+func CidrHostEnd(hostnum int, prefix interface{}) (*net.IP, error) {
+	logrus.Debug("hostnum: ", hostnum)
+	logrus.Debug("prefix: ", prefix)
+
+	network, err := parseCIDR(prefix)
+	if err != nil {
+		return nil, err
+	}
+
+	last := cidr.AddressCount(network)
+
+	ip, err := cidr.HostBig(network, big.NewInt(int64(last)-(int64(hostnum) + int64(2))))
+	return &ip, err
+}
+
 // CidrNetmask converts an IPv4 address prefix given in CIDR notation into a subnet mask address.
 func CidrNetmask(prefix interface{}) (*net.IP, error) {
 	logrus.Debug("prefix: ", prefix)
