@@ -277,10 +277,10 @@ func ExampleCidrHostEnd_simple() {
 	}
 	fmt.Println(result)
 	// Output:
-  // 10.12.127.254
-  // 10.12.126.242
-  // fd00:fd12:3456:7890:ff:ffff:ffff:ffdc
-  // 10.12.127.238
+	// 10.12.127.254
+	// 10.12.126.242
+	// fd00:fd12:3456:7890:ff:ffff:ffff:ffdc
+	// 10.12.127.238
 }
 
 func ExampleCidrNetmask_simple() {

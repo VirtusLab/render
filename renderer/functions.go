@@ -269,7 +269,7 @@ func CidrHostEnd(hostnum int, prefix interface{}) (*net.IP, error) {
 
 	last := cidr.AddressCount(network)
 
-	ip, err := cidr.HostBig(network, big.NewInt(int64(last)-(int64(hostnum) + int64(2))))
+	ip, err := cidr.HostBig(network, big.NewInt(int64(last)-(int64(hostnum)+int64(2))))
 	return &ip, err
 }
 
